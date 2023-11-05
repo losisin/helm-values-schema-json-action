@@ -67,6 +67,6 @@ jobs:
       - name: Print Output
         id: output
         run: |
-          printenv
+          uname | tr '[:upper:]' '[:lower:]'
           echo " "
-          echo $(helm env)
+          uname -m
