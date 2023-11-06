@@ -92,15 +92,7 @@
             "type": "object"
         },
         "service": {
-            "type": "object",
-            "properties": {
-                "port": {
-                    "type": "integer"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
+            "type": "object"
         },
         "serviceAccount": {
             "type": "object",
