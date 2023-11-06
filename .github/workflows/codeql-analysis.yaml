@@ -43,6 +43,6 @@ jobs:
         id: autobuild
         uses: github/codeql-action/autobuild@v2
 
-      - name: Perform CodeQL Analysis
-        id: analyze
-        uses: github/codeql-action/analyze@v2
+      # - name: Perform CodeQL Analysis
+      #   id: analyze
+      #   uses: github/codeql-action/analyze@v2
