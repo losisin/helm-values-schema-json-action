@@ -65,7 +65,3 @@ jobs:
         uses: ./
         with:
           input: __tests__/values.yaml
-
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
