@@ -55,7 +55,10 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: Test Local Action
+      - name: Set Helm
+        uses: azure/setup-helm@v3
+
+      - name: Test Action
         id: test-action
         uses: ./
         with:
