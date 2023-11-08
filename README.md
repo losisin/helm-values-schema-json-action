@@ -1,6 +1,6 @@
 # helm-values-schema-json GitHub Actions
 
-A Github action to generate values schema json file by using helm plugin [helm-values-schema-json](https://github.com/losisin/helm-values-schema-json). It always uses latetst version of the plugin.
+A GitHub action to generate values schema json file by using helm plugin [helm-values-schema-json](https://github.com/losisin/helm-values-schema-json). It always uses latetst version of the plugin.
 
 ## Usage
 
@@ -22,6 +22,7 @@ jobs:
         with:
           input: values.yaml
 ```
+
 > [!NOTE]
 > This will only generate json schema but no further action will be taken.
 
@@ -31,7 +32,7 @@ jobs:
 |------|-------------|---------|----------|
 | input | Input value file. Can be single or comma-separated list of yaml files | `values.yaml` | true |
 | draft | Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020 | `2020` | false |
-| output | Output file name with path to store the generated schema | `values.schema.json` | false |
+| output | Output filename with path to store the generated schema | `values.schema.json` | false |
 | git-push | If true it will commit and push the changes (ignored if `fail-on-diff` is set) | `false` | false |
 | git-push-user-name | If empty the name of the GitHub Actions bot will be used | `github-actions[bot]` | false |
 | git-push-user-email | If empty the no-reply email of the GitHub Actions bot will be used | `github-actions[bot]@users.noreply.github.com` | false |

@@ -31347,7 +31347,7 @@ async function run() {
         const helmSchemaCommand = `helm schema -input ${input} -output ${output} -draft ${draft}`;
         try {
             await util.promisify(child_process_1.exec)(helmSchemaCommand);
-            core.info('Merged data saved to ${output}');
+            core.info(`Merged data saved to '${output}'`);
         }
         catch (error) {
             core.setFailed('Error running helm schema command');
@@ -31358,7 +31358,7 @@ async function run() {
         if (outputStatus) {
             switch (true) {
                 case failOnDiff === 'true':
-                    core.setFailed('${output} has changed');
+                    core.setFailed(`'${output}' has changed`);
                     break;
                 case gitPush === 'true':
                     await git.addConfig('user.name', gitPushUserName);
@@ -31369,7 +31369,7 @@ async function run() {
                     core.info(`Pushed '${output}' to the branch.`);
                     break;
                 default:
-                    core.info(`'${output}' left unchanged.`);
+                    core.info(`'${output}' has unchanged, but no action was requested.`);
             }
         }
         else {
