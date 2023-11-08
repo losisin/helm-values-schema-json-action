@@ -1,44 +1,39 @@
 name: Helm values.schema.json action
 author: losisin
-description: A GitHub action for generating json schema from multiple values files hor Helm3 charts. Usues helm plugin https://github.com/losisin/helm-values-schema-json
+description: A GitHub action for generating json schema from multiple values files for Helm3 charts. Uses helm plugin https://github.com/losisin/helm-values-schema-json
 
 inputs:
   input:
-    description: Comma-separated list of values yaml files
+    description: Input value file. Can be single or comma-separated list of yaml files
     required: true
-    default: values.yaml
   draft:
     description: Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020
     required: false
     default: 2020
   output:
-    description: Output file name
+    description: Output file name with path to store the generated schema
     required: false
     default: values.schema.json
   git-push:
-    description: If true it will commit and push the changes
+    description: If true it will commit and push the changes (ignored if `fail-on-diff` is set)
     required: false
-    default: "false"
+    default: 'false'
   git-push-user-name:
     description: If empty the name of the GitHub Actions bot will be used (i.e. `github-actions[bot]`)
     required: false
-    default: ""
+    default: "github-actions[bot]"
   git-push-user-email:
     description: If empty the no-reply email of the GitHub Actions bot will be used (i.e. `github-actions[bot]@users.noreply.github.com`)
     required: false
-    default: ""
+    default: "github-actions[bot]@users.noreply.github.com"
   git-commit-message:
     description: Commit message
     required: false
     default: "update values.schema.json"
-  git-push-sign-off:
-    description: If true it will sign-off commit
-    required: false
-    default: "false"
   fail-on-diff:
-    description: Fail the job if there is any diff found between the generated output and existing file (ignored if `git-push` is set)
+    description: Fail the job if there is any diff found between the generated output and existing file
     required: false
-    default: "false"
+    default: 'false'
 
 runs:
   using: node20
