@@ -1,6 +1,6 @@
 name: Helm values.schema.json action
 author: losisin
-description: A GitHub action for generating json schema from multiple values files for Helm3 charts. Uses helm plugin https://github.com/losisin/helm-values-schema-json
+description: A GitHub action for generating json schema from multiple values files for Helm3 charts
 
 inputs:
   input:
