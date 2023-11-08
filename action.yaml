@@ -6,17 +6,16 @@ inputs:
   input:
     description: Input value file. Can be single or comma-separated list of yaml files
     required: true
-    default: values.yaml
   draft:
     description: Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020
     required: false
     default: 2020
   output:
-    description: Output file name
+    description: Output file name with path to store the generated schema
     required: false
     default: values.schema.json
   git-push:
-    description: If true it will commit and push the changes
+    description: If true it will commit and push the changes (ignored if `fail-on-diff` is set)
     required: false
     default: 'false'
   git-push-user-name:
@@ -31,12 +30,8 @@ inputs:
     description: Commit message
     required: false
     default: "update values.schema.json"
-  # git-push-sign-off:
-  #   description: If true it will sign-off commit
-  #   required: false
-  #   default: 'false'
   fail-on-diff:
-    description: Fail the job if there is any diff found between the generated output and existing file (ignored if `git-push` is set)
+    description: Fail the job if there is any diff found between the generated output and existing file
     required: false
     default: 'false'
 
