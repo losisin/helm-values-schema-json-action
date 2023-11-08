@@ -31292,7 +31292,6 @@ const simple_git_1 = __nccwpck_require__(9103);
 const core = __importStar(__nccwpck_require__(2186));
 async function isHelmInstalled() {
     try {
-        // Check if Helm is in the PATH
         await util.promisify(child_process_1.exec)('helm version --short');
         return true;
     }
@@ -31303,7 +31302,6 @@ async function isHelmInstalled() {
 exports.isHelmInstalled = isHelmInstalled;
 async function isPluginInstalled() {
     try {
-        // Check if the plugin is already installed
         await util.promisify(child_process_1.exec)('helm plugin list | grep -q "schema"');
         return true;
     }
@@ -31317,25 +31315,21 @@ async function installPlugin() {
         const helmInstalled = await isHelmInstalled();
         if (!helmInstalled) {
             core.setFailed('Helm is required to install the plugin');
-            return;
         }
         const pluginInstalled = await isPluginInstalled();
         if (pluginInstalled) {
-            // Update the helm-values-schema-json plugin if it's already installed
             const updateCommand = 'helm plugin update schema';
             await util.promisify(child_process_1.exec)(updateCommand);
-            core.info('Plugin already installed, running update...');
+            core.info('Plugin successfully updated');
         }
         else {
-            // Install the helm-values-schema-json plugin
             const installCommand = 'helm plugin install https://github.com/losisin/helm-values-schema-json.git';
             await util.promisify(child_process_1.exec)(installCommand);
             core.info('Plugin successfully installed');
         }
     }
     catch (error) {
-        if (error instanceof Error)
-            core.setFailed(error.message);
+        core.setFailed('Error installing plugin');
     }
 }
 exports.installPlugin = installPlugin;
@@ -31349,9 +31343,7 @@ async function run() {
         const gitPushUserEmail = core.getInput('git-push-user-email');
         const gitCommitMessage = core.getInput('git-commit-message');
         const failOnDiff = core.getInput('fail-on-diff');
-        // Check Helm, update/install the plugin
         await installPlugin();
-        // Run the 'helm schema' command
         const helmSchemaCommand = `helm schema -input ${input} -output ${output} -draft ${draft}`;
         try {
             await util.promisify(child_process_1.exec)(helmSchemaCommand);
@@ -31360,15 +31352,13 @@ async function run() {
         catch (error) {
             core.setFailed('Error running helm schema command');
         }
-        // Use simple-git diffSummary to check for changes in the 'output' file
         const git = (0, simple_git_1.simpleGit)();
         const statusSummary = await git.status();
-        // Check if the 'output' file has been added, modified, or deleted
         const outputStatus = statusSummary.files.find(file => file.path === output);
         if (outputStatus) {
             switch (true) {
                 case failOnDiff === 'true':
-                    core.setFailed('Output has changed');
+                    core.setFailed('${output} has changed');
                     break;
                 case gitPush === 'true':
                     await git.addConfig('user.name', gitPushUserName);

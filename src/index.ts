@@ -5,7 +5,6 @@ import * as core from '@actions/core'
 
 export async function isHelmInstalled(): Promise<boolean> {
   try {
-    // Check if Helm is in the PATH
     await util.promisify(exec)('helm version --short')
     return true
   } catch (error) {
@@ -15,7 +14,6 @@ export async function isHelmInstalled(): Promise<boolean> {
 
 export async function isPluginInstalled(): Promise<boolean> {
   try {
-    // Check if the plugin is already installed
     await util.promisify(exec)('helm plugin list | grep -q "schema"')
     return true
   } catch (error) {
@@ -28,19 +26,17 @@ export async function installPlugin(): Promise<void> {
     const helmInstalled = await isHelmInstalled()
     if (!helmInstalled) {
       core.setFailed('Helm is required to install the plugin')
-      return
     }
 
     const pluginInstalled = await isPluginInstalled()
 
     if (pluginInstalled) {
-      // Update the helm-values-schema-json plugin if it's already installed
       const updateCommand = 'helm plugin update schema'
       await util.promisify(exec)(updateCommand)
-      core.info('Plugin already installed, running update...')
+      core.info('Plugin successfully updated')
     } else {
-      // Install the helm-values-schema-json plugin
-      const installCommand = 'helm plugin install https://github.com/losisin/helm-values-schema-json.git'
+      const installCommand =
+        'helm plugin install https://github.com/losisin/helm-values-schema-json.git'
       await util.promisify(exec)(installCommand)
       core.info('Plugin successfully installed')
     }
@@ -60,10 +56,8 @@ export async function run(): Promise<void> {
     const gitCommitMessage = core.getInput('git-commit-message')
     const failOnDiff = core.getInput('fail-on-diff')
 
-    // Check Helm, update/install the plugin
     await installPlugin()
 
-    // Run the 'helm schema' command
     const helmSchemaCommand = `helm schema -input ${input} -output ${output} -draft ${draft}`
     try {
       await util.promisify(exec)(helmSchemaCommand)
@@ -72,11 +66,9 @@ export async function run(): Promise<void> {
       core.setFailed('Error running helm schema command')
     }
 
-    // Use simple-git diffSummary to check for changes in the 'output' file
     const git = simpleGit()
     const statusSummary = await git.status()
 
-    // Check if the 'output' file has been added, modified, or deleted
     const outputStatus = statusSummary.files.find(file => file.path === output)
     if (outputStatus) {
       switch (true) {

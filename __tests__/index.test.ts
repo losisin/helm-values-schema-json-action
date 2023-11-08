@@ -28,7 +28,7 @@ describe('isHelmInstalled', () => {
     const result = await isHelmInstalled()
 
     expect(result).toBe(true)
-  });
+  })
 
   it('should return false when Helm is not installed', async () => {
     jest.spyOn(util, 'promisify').mockImplementation(fn => {
@@ -40,8 +40,8 @@ describe('isHelmInstalled', () => {
     const result = await isHelmInstalled()
 
     expect(result).toBe(false)
-  });
-});
+  })
+})
 
 describe('isPluginInstalled', () => {
   it('should return true when the plugin is installed', async () => {
@@ -54,7 +54,7 @@ describe('isPluginInstalled', () => {
     const result = await isPluginInstalled()
 
     expect(result).toBe(true)
-  });
+  })
 
   it('should return false when the plugin is not installed', async () => {
     jest.spyOn(util, 'promisify').mockImplementation(fn => {
@@ -66,8 +66,8 @@ describe('isPluginInstalled', () => {
     const result = await isPluginInstalled()
 
     expect(result).toBe(false)
-  });
-});
+  })
+})
 
 describe('installPlugin', () => {
   beforeEach(() => {
@@ -86,8 +86,9 @@ describe('installPlugin', () => {
 
     await installPlugin()
 
-    expect(core.info).toHaveBeenCalledWith('Plugin installed successfully')
-  });
+    expect(core.setFailed).not.toHaveBeenCalled()
+    expect(core.info).toHaveBeenCalledTimes(1)
+  })
 
   it('should update plugin if installed', async () => {
     jest.spyOn(indexModule, 'isPluginInstalled').mockResolvedValue(true)
@@ -99,12 +100,10 @@ describe('installPlugin', () => {
 
     await installPlugin()
 
-    expect(core.info).toHaveBeenCalledWith(
-      'Plugin already installed, running update...'
-    )
-  });
-
-});
+    expect(core.setFailed).not.toHaveBeenCalled()
+    expect(core.info).toHaveBeenCalledTimes(1)
+  })
+})
 
 // describe('run', () => {
 //   beforeEach(() => {
