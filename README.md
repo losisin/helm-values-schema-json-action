@@ -65,7 +65,8 @@ jobs:
 
 ### Auto commit generated schema
 
-> [!NOTE]: This options are ignored if `fail-on-diff: true`. 
+> [!NOTE]
+> This options are ignored if `fail-on-diff: true`.
 
 To automatically commit the generated schema, add the following step to your workflow:
 
