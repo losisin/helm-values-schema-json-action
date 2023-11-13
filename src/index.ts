@@ -94,21 +94,25 @@ export function getPlugin(version: string): string {
     case operatingSystem == LINUX && arch == ARM64:
       return util.format(
         'https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_linux_arm64.tgz',
+        version,
         version
       )
     case operatingSystem == LINUX:
       return util.format(
         'https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_linux_amd64.tgz',
+        version,
         version
       )
     case operatingSystem == MAC_OS && arch == ARM64:
       return util.format(
         'https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_darwin_arm64.tgz',
+        version,
         version
       )
     case operatingSystem == MAC_OS:
       return util.format(
         'https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_darwin_amd64.tgz',
+        version,
         version
       )
 
