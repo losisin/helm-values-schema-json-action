@@ -29650,7 +29650,7 @@ function getPlugin(version) {
             return util.format('https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_darwin_amd64.tgz', version);
         case operatingSystem == WINDOWS:
         default:
-            return util.format('https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_windows_amd64.tgz', version);
+            return util.format('https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_windows_amd64.tgz', version, version);
     }
 }
 exports.getPlugin = getPlugin;
@@ -29708,7 +29708,7 @@ var walkSync = function (dir, filelist, fileToFind) {
 exports.walkSync = walkSync;
 async function run() {
     // try {
-    const version = "0.2.0";
+    const version = '0.2.0';
     const input = core.getInput('input');
     const draft = core.getInput('draft');
     const output = core.getInput('output');
