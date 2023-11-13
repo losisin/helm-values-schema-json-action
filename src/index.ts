@@ -147,8 +147,7 @@ export async function installPlugin(version: string): Promise<string> {
   }
 
   fs.chmodSync(pluginPath, '777')
-  console.log(getPlugin(version))
-  return getPlugin(version)
+  return pluginPath
 }
 
 export function findPlugin(rootFolder: string): string {

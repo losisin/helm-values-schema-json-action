@@ -29673,8 +29673,7 @@ async function installPlugin(version) {
         throw new Error(util.format('Plugin not found in path', cachedToolpath));
     }
     fs.chmodSync(pluginPath, '777');
-    console.log(getPlugin(version));
-    return getPlugin(version);
+    return pluginPath;
 }
 exports.installPlugin = installPlugin;
 function findPlugin(rootFolder) {
