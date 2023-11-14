@@ -29643,16 +29643,16 @@ function getPlugin(version) {
     const operatingSystem = os.type();
     switch (true) {
         case operatingSystem == LINUX && arch == ARM64:
-            return util.format(pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_linux_arm64.tgz');
+            return util.format('%s%s/helm-values-schema-json_%s_linux_arm64.tgz', pluginReleaseURL, version, version.substring(1));
         case operatingSystem == LINUX:
-            return util.format(pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_linux_amd64.tgz');
+            return util.format('%s%s/helm-values-schema-json_%s_linux_amd64.tgz', pluginReleaseURL, version, version.substring(1));
         case operatingSystem == MAC_OS && arch == ARM64:
-            return util.format(pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_darwin_arm64.tgz');
+            return util.format('%s%s/helm-values-schema-json_%s_darwin_arm64.tgz', pluginReleaseURL, version, version.substring(1));
         case operatingSystem == MAC_OS:
-            return util.format(pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_darwin_amd64.tgz');
+            return util.format('%s%s/helm-values-schema-json_%s_darwin_amd64.tgz', pluginReleaseURL, version, version.substring(1));
         case operatingSystem == WINDOWS:
         default:
-            return util.format(pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_windows_amd64.tgz');
+            return util.format('%s%s/helm-values-schema-json_%s_windows_amd64.tgz', pluginReleaseURL, version, version.substring(1));
     }
 }
 exports.getPlugin = getPlugin;
