@@ -29567,6 +29567,7 @@ const path = __importStar(__nccwpck_require__(1017));
 const util = __importStar(__nccwpck_require__(3837));
 const fs = __importStar(__nccwpck_require__(7147));
 const core = __importStar(__nccwpck_require__(2186));
+const exec = __importStar(__nccwpck_require__(1514));
 const tc = __importStar(__nccwpck_require__(7784));
 // export async function installPlugin(): Promise<void> {
 //   try {
@@ -29729,6 +29730,7 @@ async function run() {
         //do nothing, set as output variable
     }
     core.info(`JSON schema binary '${pluginVersion}' has been cached at ${cachedPath}`);
+    await exec.exec('schema', ['--help']);
     // core.setOutput('helm-path', cachedPath)
     // const helmSchemaCommand = `helm schema -input ${input} -output ${output} -draft ${draft}`
     // try {

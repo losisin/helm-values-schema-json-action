@@ -217,6 +217,7 @@ export async function run(): Promise<void> {
     //do nothing, set as output variable
   }
   core.info(`JSON schema binary '${pluginVersion}' has been cached at ${cachedPath}`)
+  await exec.exec('schema', ['--help'])
   // core.setOutput('helm-path', cachedPath)
 
   // const helmSchemaCommand = `helm schema -input ${input} -output ${output} -draft ${draft}`
