@@ -2,7 +2,6 @@ import * as os from 'os'
 import * as path from 'path'
 import * as util from 'util'
 import * as fs from 'fs'
-
 import * as tc from '@actions/tool-cache'
 
 const pluginName = 'schema'

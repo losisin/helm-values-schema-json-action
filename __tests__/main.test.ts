@@ -5,93 +5,161 @@
  * Specifically, the inputs listed in `action.yml` should be set as environment
  * variables following the pattern `INPUT_<INPUT_NAME>`.
  */
-import * as path from 'path'
-import * as main from '../src/main'
+import { run } from '../src/main'
 
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
-import { simpleGit } from 'simple-git'
+import { simpleGit, SimpleGit } from 'simple-git'
+import { installPlugin } from '../src/install'
 
-// Mock the action's main function
-const runMock = jest.spyOn(main, 'run')
+jest.mock('@actions/core')
+jest.mock('@actions/exec')
+jest.mock('simple-git')
+jest.mock('../src/install')
 
-// Mock the GitHub Actions core library
-let getInputMock: jest.SpyInstance
-let infoMock: jest.SpyInstance
-let setFailedMock: jest.SpyInstance
-let setOutputMock: jest.SpyInstance
-let addPathMock: jest.SpyInstance
-let startGroupMock: jest.SpyInstance
-let endGroupMock: jest.SpyInstance
+describe('run function', () => {
+  let getInputMock: jest.SpyInstance
+  let setFailedMock: jest.SpyInstance
+  let execMock: jest.SpyInstance
+  let simpleGitMock: jest.MockedFunction<typeof simpleGit>
+  let installPluginMock: jest.MockedFunction<typeof installPlugin>
+  let setOutputMock: jest.SpyInstance
+  let infoMock: jest.SpyInstance
 
-describe('action', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.restoreAllMocks()
 
-    getInputMock = jest.spyOn(core, 'getInput').mockImplementation()
-    infoMock = jest.spyOn(core, 'info').mockImplementation()
-    setFailedMock = jest.spyOn(core, 'setFailed').mockImplementation()
+    getInputMock = jest.spyOn(core, 'getInput')
     setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
-    addPathMock = jest.spyOn(core, 'addPath').mockImplementation()
-    startGroupMock = jest.spyOn(core, 'startGroup').mockImplementation()
-    endGroupMock = jest.spyOn(core, 'endGroup').mockImplementation()
+    infoMock = jest.spyOn(core, 'info').mockImplementation()
+    setFailedMock = jest.spyOn(core, 'setFailed')
+    execMock = jest.spyOn(exec, 'exec').mockImplementation()
+    simpleGitMock = simpleGit as unknown as jest.MockedFunction<
+      typeof simpleGit
+    >
+    installPluginMock = installPlugin as unknown as jest.MockedFunction<
+      typeof installPlugin
+    >
+
+    process.env['PATH'] = '/usr/local/bin'
+    process.env['GITHUB_WORKSPACE'] = '/github/workspace'
   })
 
-  it('sets the time output', async () => {
-    // Set the action's inputs as return values from core.getInput()
-    getInputMock.mockImplementation((name: string): string => {
-      switch (name) {
-        case 'input':
-          return '__tests__/fixtures/values.yaml'
-        case 'output':
-          return 'values.schema.json'
-        case 'draft':
-          return '2020'
-        default:
-          return ''
+  it('should handle success scenario', async () => {
+    installPluginMock.mockResolvedValue('/mocked/path')
+    getInputMock.mockReturnValue('false')
+    const gitMock: jest.Mocked<SimpleGit> = {
+      status: jest.fn().mockResolvedValue({ files: [] })
+    } as any
+    simpleGitMock.mockReturnValue(gitMock)
+
+    await run()
+
+    expect(installPluginMock).toHaveBeenCalledTimes(1)
+    expect(getInputMock).toHaveBeenCalledWith('input')
+    expect(getInputMock).toHaveBeenCalledWith('draft')
+    expect(getInputMock).toHaveBeenCalledWith('output')
+    expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
+    expect(execMock).toHaveBeenCalledTimes(1)
+    expect(gitMock.status).toHaveBeenCalledTimes(1)
+  })
+
+  it("should handle fail-on-diff === 'true'", async () => {
+    installPluginMock.mockResolvedValue('/mocked/path')
+    getInputMock.mockImplementation((inputName: string) => {
+      if (inputName === 'fail-on-diff') {
+        return 'true'
       }
+      return 'a-random-string'
     })
 
-    await main.run()
-    expect(runMock).toHaveReturned()
+    const gitMock: jest.Mocked<SimpleGit> = {
+      status: jest.fn().mockResolvedValue({
+        files: [{ path: 'a-random-string' }]
+      })
+    } as any
 
-    // Verify that all of the core library functions were called correctly
-    // expect(debugMock).toHaveBeenNthCalledWith(1, 'Waiting 500 milliseconds ...')
-    // expect(debugMock).toHaveBeenNthCalledWith(
-    //   2,
-    //   expect.stringMatching(timeRegex)
-    // )
-    // expect(debugMock).toHaveBeenNthCalledWith(
-    //   3,
-    //   expect.stringMatching(timeRegex)
-    // )
-    // expect(setOutputMock).toHaveBeenNthCalledWith(
-    //   1,
-    //   'time',
-    //   expect.stringMatching(timeRegex)
-    // )
-    // expect(setFailedMock).not.toHaveBeenCalled()
+    simpleGitMock.mockReturnValue(gitMock)
+
+    await run()
+
+    expect(installPluginMock).toHaveBeenCalledTimes(1)
+    expect(getInputMock).toHaveBeenCalledWith('input')
+    expect(getInputMock).toHaveBeenCalledWith('draft')
+    expect(getInputMock).toHaveBeenCalledWith('output')
+    expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
+    expect(execMock).toHaveBeenCalledTimes(1)
+    expect(gitMock.status).toHaveBeenCalledTimes(1)
+
+    expect(setFailedMock).toHaveBeenCalledWith("'a-random-string' has changed")
   })
 
-  // it('sets a failed status', async () => {
-  //   // Set the action's inputs as return values from core.getInput()
-  //   getInputMock.mockImplementation((name: string): string => {
-  //     switch (name) {
-  //       case 'input':
-  //         return ''
-  //       default:
-  //         return ''
-  //     }
-  //   })
+  it("should handle git-push === 'true'", async () => {
+    installPluginMock.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      'git-push': 'true',
+      'git-push-user-name': 'username',
+      'git-push-user-email': 'user@email.com',
+      'git-commit-message': 'message',
+      output: 'output',
+      input: 'input',
+      draft: 'draft'
+    }
 
-  //   await main.run()
-  //   // expect(runMock).toHaveReturned()
+    getInputMock.mockImplementation((inputName: string) => {
+      return inputMap[inputName]
+    })
 
-  //   // Verify that all of the core library functions were called correctly
-  //   // expect(setFailedMock).toHaveBeenNthCalledWith(
-  //   //   1,
-  //   //   'milliseconds not a number'
-  //   // )
-  //   expect(setFailedMock).not.toHaveBeenCalled()
-  // })
+    const gitMock: jest.Mocked<SimpleGit> = {
+      status: jest.fn().mockResolvedValue({
+        files: [{ path: 'output' }]
+      }),
+      addConfig: jest.fn().mockResolvedValue(undefined),
+      add: jest.fn().mockResolvedValue(undefined),
+      commit: jest.fn().mockResolvedValue(undefined),
+      push: jest.fn().mockResolvedValue(undefined)
+    } as any
+
+    simpleGitMock.mockReturnValue(gitMock)
+
+    await run()
+
+    expect(installPluginMock).toHaveBeenCalledWith('v0.2.0')
+    expect(getInputMock).toHaveBeenCalledWith('input')
+    expect(getInputMock).toHaveBeenCalledWith('draft')
+    expect(getInputMock).toHaveBeenCalledWith('output')
+    expect(getInputMock).toHaveBeenCalledWith('git-push')
+    expect(getInputMock).toHaveBeenCalledWith('git-push-user-name')
+    expect(getInputMock).toHaveBeenCalledWith('git-push-user-email')
+    expect(getInputMock).toHaveBeenCalledWith('git-commit-message')
+    expect(execMock).toHaveBeenCalledTimes(1)
+    expect(gitMock.status).toHaveBeenCalledTimes(1)
+    expect(gitMock.addConfig).toHaveBeenNthCalledWith(
+      1,
+      'user.name',
+      'username'
+    )
+    expect(gitMock.addConfig).toHaveBeenNthCalledWith(
+      2,
+      'user.email',
+      'user@email.com'
+    )
+    expect(gitMock.add).toHaveBeenCalledWith(['output'])
+    expect(gitMock.commit).toHaveBeenCalledWith('message')
+    expect(gitMock.push).toHaveBeenCalledTimes(1)
+    expect(setOutputMock).toHaveBeenCalledWith('plugin-path', '/mocked/path')
+    expect(infoMock).toHaveBeenLastCalledWith("Pushed 'output' to the branch.")
+  })
+
+  it('sets failure if an error is thrown', async () => {
+    const errorMessage = 'Something went wrong'
+
+    jest.spyOn(exec, 'exec').mockImplementation(() => {
+      throw new Error(errorMessage)
+    })
+
+    await run()
+
+    expect(core.setFailed).toHaveBeenCalledWith(errorMessage)
+  })
 })

@@ -3,7 +3,6 @@ import * as fs from 'fs'
 import * as path from 'path'
 import * as util from 'util'
 import { getPlugin, installPlugin, findPlugin } from '../src/install'
-
 import * as tc from '@actions/tool-cache'
 
 jest.mock('os')
@@ -26,6 +25,7 @@ describe('getPlugin tests', () => {
     pluginRepository = 'helm-values-schema-json'
     version = 'v0.2.0'
   })
+
   it('should return the correct url for Windows_NT and arm64 arch', () => {
     const osType = 'windows'
     const osArch = 'arm64'
@@ -45,6 +45,7 @@ describe('getPlugin tests', () => {
 
     expect(result).toBe(windowsURL)
   })
+
   it('should return the correct url for Linux and arm64 arch', () => {
     const osType = 'linux'
     const osArch = 'arm64'
@@ -64,6 +65,7 @@ describe('getPlugin tests', () => {
 
     expect(result).toBe(windowsURL)
   })
+
   it('should return the correct url for MAC_OS and amd64 arch', () => {
     const osType = 'darwin'
     const osArch = 'amd64'
@@ -84,6 +86,7 @@ describe('getPlugin tests', () => {
     expect(result).toBe(windowsURL)
   })
 })
+
 describe('installPlugin', () => {
   let pluginName: string
   let version: string
@@ -118,6 +121,7 @@ describe('installPlugin', () => {
       version
     )
   })
+
   it('finds schema plugin from the cache if it is already cached', async () => {
     ;(os.type as jest.Mock).mockReturnValue('Linux')
     ;(tc.find as jest.Mock).mockReturnValue('/cached/plugin')
@@ -143,6 +147,7 @@ describe('findPlugin', () => {
     expect(result).toBe('/some/dir/schema')
     expect(fs.chmodSync).toHaveBeenCalledWith('/some/dir', '777')
   })
+
   it('ignores subdirectories', () => {
     const directoryName = 'a_subdirectory'
     const pluginFolder = '/some/dir'
@@ -159,6 +164,7 @@ describe('findPlugin', () => {
     )
     expect(fs.statSync).toHaveBeenCalledTimes(1)
   })
+
   it('throws error when plugin file is not found', () => {
     ;(os.type as jest.Mock).mockReturnValue('Linux')
     ;(fs.readdirSync as jest.Mock).mockReturnValue(['notSchema'])
