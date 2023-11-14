@@ -7828,13 +7828,13 @@ module.exports = setup;
 if (typeof process === 'undefined' || process.type === 'renderer' || process.browser === true || process.__nwjs) {
 	module.exports = __nccwpck_require__(8222);
 } else {
-	module.exports = __nccwpck_require__(5332);
+	module.exports = __nccwpck_require__(4874);
 }
 
 
 /***/ }),
 
-/***/ 5332:
+/***/ 4874:
 /***/ ((module, exports, __nccwpck_require__) => {
 
 /**
@@ -34544,7 +34544,7 @@ var _v3 = _interopRequireDefault(__nccwpck_require__(5122));
 
 var _v4 = _interopRequireDefault(__nccwpck_require__(9120));
 
-var _nil = _interopRequireDefault(__nccwpck_require__(5350));
+var _nil = _interopRequireDefault(__nccwpck_require__(5332));
 
 var _version = _interopRequireDefault(__nccwpck_require__(1595));
 
@@ -34588,7 +34588,7 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 5350:
+/***/ 5332:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -35118,7 +35118,7 @@ exports["default"] = _default;
 
 /***/ }),
 
-/***/ 6144:
+/***/ 649:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -35147,18 +35147,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = exports.findPlugin = exports.installPlugin = exports.getPlugin = void 0;
+exports.findPlugin = exports.installPlugin = exports.getPlugin = void 0;
 const os = __importStar(__nccwpck_require__(2037));
 const path = __importStar(__nccwpck_require__(1017));
 const util = __importStar(__nccwpck_require__(3837));
 const fs = __importStar(__nccwpck_require__(7147));
-const simple_git_1 = __nccwpck_require__(9103);
-const core = __importStar(__nccwpck_require__(2186));
-const exec = __importStar(__nccwpck_require__(1514));
 const tc = __importStar(__nccwpck_require__(7784));
 const pluginName = 'schema';
 const pluginRepository = 'helm-values-schema-json';
-const pluginVersion = 'v0.2.0';
+const version = 'v0.2.0';
 function getPlugin(pluginVersion) {
     const osArch = os.arch();
     const osType = os.type();
@@ -35170,7 +35167,7 @@ exports.getPlugin = getPlugin;
 async function installPlugin(pluginVersion) {
     let cachedPluginpath = tc.find(pluginName, pluginVersion);
     if (!cachedPluginpath) {
-        const pluginDownloadPath = await tc.downloadTool(getPlugin(pluginVersion));
+        const pluginDownloadPath = await tc.downloadTool(getPlugin(version));
         fs.chmodSync(pluginDownloadPath, '777');
         const unTaredPath = await tc.extractTar(pluginDownloadPath);
         cachedPluginpath = await tc.cacheDir(unTaredPath, pluginName, pluginVersion);
@@ -35201,56 +35198,106 @@ function findPlugin(pluginFolder) {
     return path.join(pluginFolder, foundFiles[0]);
 }
 exports.findPlugin = findPlugin;
+
+
+/***/ }),
+
+/***/ 399:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
+const path = __importStar(__nccwpck_require__(1017));
+const install_1 = __nccwpck_require__(649);
+const core = __importStar(__nccwpck_require__(2186));
+const exec = __importStar(__nccwpck_require__(1514));
+const simple_git_1 = __nccwpck_require__(9103);
+const version = 'v0.2.0';
+/**
+ * The main function for the action.
+ * @returns {Promise<void>} Resolves when the action is complete.
+ */
 async function run() {
-    const input = core.getInput('input');
-    const draft = core.getInput('draft');
-    const output = core.getInput('output');
-    const gitPush = core.getInput('git-push');
-    const gitPushUserName = core.getInput('git-push-user-name');
-    const gitPushUserEmail = core.getInput('git-push-user-email');
-    const gitCommitMessage = core.getInput('git-commit-message');
-    const failOnDiff = core.getInput('fail-on-diff');
-    core.startGroup(`Downloading JSON schema ${pluginVersion}`);
-    const cachedPath = await installPlugin(pluginVersion);
-    core.endGroup();
-    process.env['PATH']?.startsWith(path.dirname(cachedPath)) ||
-        core.addPath(path.dirname(cachedPath));
-    core.info(`JSON schema binary '${pluginVersion}' has been cached at ${cachedPath}`);
-    core.setOutput('plugin-path', cachedPath);
-    await exec.exec('schema', [
-        '-input',
-        input,
-        '-output',
-        output,
-        '-draft',
-        draft
-    ]);
-    const git = (0, simple_git_1.simpleGit)();
-    const statusSummary = await git.status();
-    const outputStatus = statusSummary.files.find(file => file.path === output);
-    if (outputStatus) {
-        switch (true) {
-            case failOnDiff === 'true':
-                core.setFailed(`'${output}' has changed`);
-                break;
-            case gitPush === 'true':
-                await git.addConfig('user.name', gitPushUserName);
-                await git.addConfig('user.email', gitPushUserEmail);
-                await git.add([output]);
-                await git.commit(gitCommitMessage);
-                // await git.push()
-                core.info(`Pushed '${output}' to the branch.`);
-                break;
-            default:
-                core.info(`'${output}' has changed, but no action was requested.`);
+    try {
+        const input = core.getInput('input');
+        const draft = core.getInput('draft');
+        const output = core.getInput('output');
+        const gitPush = core.getInput('git-push');
+        const gitPushUserName = core.getInput('git-push-user-name');
+        const gitPushUserEmail = core.getInput('git-push-user-email');
+        const gitCommitMessage = core.getInput('git-commit-message');
+        const failOnDiff = core.getInput('fail-on-diff');
+        core.startGroup(`Downloading JSON schema ${version}`);
+        const cachedPath = await (0, install_1.installPlugin)(version);
+        core.endGroup();
+        process.env['PATH']?.startsWith(path.dirname(cachedPath)) ||
+            core.addPath(path.dirname(cachedPath));
+        core.info(`JSON schema binary '${version}' has been cached at ${cachedPath}`);
+        core.setOutput('plugin-path', cachedPath);
+        await exec.exec('schema', [
+            '-input',
+            input,
+            '-output',
+            output,
+            '-draft',
+            draft
+        ]);
+        const git = (0, simple_git_1.simpleGit)();
+        const statusSummary = await git.status();
+        const outputStatus = statusSummary.files.find(file => file.path === output);
+        if (outputStatus) {
+            switch (true) {
+                case failOnDiff === 'true':
+                    core.setFailed(`'${output}' has changed`);
+                    break;
+                case gitPush === 'true':
+                    await git.addConfig('user.name', gitPushUserName);
+                    await git.addConfig('user.email', gitPushUserEmail);
+                    await git.add([output]);
+                    await git.commit(gitCommitMessage);
+                    await git.push();
+                    core.info(`Pushed '${output}' to the branch.`);
+                    break;
+                default:
+                    core.info(`'${output}' has changed, but no action was requested.`);
+            }
+        }
+        else {
+            core.info(`'${output}' is up to date.`);
         }
     }
-    else {
-        core.info(`'${output}' is up to date.`);
+    catch (error) {
+        // Fail the workflow run if an error occurs
+        if (error instanceof Error)
+            core.setFailed(error.message);
     }
 }
 exports.run = run;
-run().catch(core.setFailed);
 
 
 /***/ }),
@@ -35541,12 +35588,22 @@ module.exports = require("zlib");
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(6144);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * The entrypoint for the action.
+ */
+const main_1 = __nccwpck_require__(399);
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+(0, main_1.run)();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
