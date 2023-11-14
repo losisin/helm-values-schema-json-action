@@ -39,7 +39,7 @@ export async function installPlugin(pluginVersion: string): Promise<string> {
   const pluginPath = findPlugin(cachedPluginpath)
   if (!pluginPath) {
     throw new Error(
-      util.format('JSON schema binary not found in path', cachedPluginpath)
+      util.format('JSON schema binary not found in path: ${cachedPluginpath}')
     )
   }
 
@@ -62,9 +62,7 @@ export function findPlugin(pluginFolder: string): string {
   })
 
   if (foundFiles.length === 0) {
-    throw new Error(
-      util.format('JSON schema executable not found in path', pluginFolder)
-    )
+    throw new Error(`JSON schema executable not found in path: ${pluginFolder}`)
   }
 
   return path.join(pluginFolder, foundFiles[0])

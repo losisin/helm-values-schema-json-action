@@ -33752,7 +33752,7 @@ async function installPlugin(pluginVersion) {
     }
     const pluginPath = findPlugin(cachedPluginpath);
     if (!pluginPath) {
-        throw new Error(util.format('JSON schema binary not found in path', cachedPluginpath));
+        throw new Error(util.format('JSON schema binary not found in path: ${cachedPluginpath}'));
     }
     fs.chmodSync(pluginPath, '777');
     return pluginPath;
@@ -33771,7 +33771,7 @@ function findPlugin(pluginFolder) {
         return file === targetFileName;
     });
     if (foundFiles.length === 0) {
-        throw new Error(util.format('JSON schema executable not found in path', pluginFolder));
+        throw new Error(`JSON schema executable not found in path: ${pluginFolder}`);
     }
     return path.join(pluginFolder, foundFiles[0]);
 }
