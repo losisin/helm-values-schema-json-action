@@ -80,6 +80,8 @@ export function getExecutableExtension(): string {
 }
 
 const pluginName = 'schema'
+const pluginReleaseURL = 'https://github.com/losisin/helm-values-schema-json/releases/download/'
+const pluginVersion = 'v0.2.0'
 
 const LINUX = 'Linux'
 const MAC_OS = 'Darwin'
@@ -93,36 +95,20 @@ export function getPlugin(version: string): string {
   switch (true) {
     case operatingSystem == LINUX && arch == ARM64:
       return util.format(
-        'https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_linux_arm64.tgz',
-        version,
-        version
-      )
+        pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_linux_arm64.tgz')
     case operatingSystem == LINUX:
       return util.format(
-        'https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_linux_amd64.tgz',
-        version,
-        version
-      )
+        pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_linux_amd64.tgz')
     case operatingSystem == MAC_OS && arch == ARM64:
       return util.format(
-        'https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_darwin_arm64.tgz',
-        version,
-        version
-      )
+        pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_darwin_arm64.tgz')
     case operatingSystem == MAC_OS:
       return util.format(
-        'https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_darwin_amd64.tgz',
-        version,
-        version
-      )
-
+        pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_darwin_amd64.tgz')
     case operatingSystem == WINDOWS:
     default:
       return util.format(
-        'https://github.com/losisin/helm-values-schema-json/releases/download/v%s/helm-values-schema-json_%s_windows_amd64.tgz',
-        version,
-        version
-      )
+        pluginReleaseURL, version, '/helm-values-schema-json_', version.substring(1), '_windows_amd64.tgz')
   }
 }
 
@@ -133,7 +119,7 @@ export async function installPlugin(version: string): Promise<string> {
     try {
       helmDownloadPath = await tc.downloadTool(getPlugin(version))
     } catch (exception) {
-      throw new Error(`Failed to download plugin from: ${getPlugin(version)}`)
+      throw new Error(`Failed to download JSON schema binary from: ${getPlugin(version)}`)
     }
 
     fs.chmodSync(helmDownloadPath, '777')
@@ -143,7 +129,7 @@ export async function installPlugin(version: string): Promise<string> {
 
   const pluginPath = findPlugin(cachedToolpath)
   if (!pluginPath) {
-    throw new Error(util.format('Plugin not found in path', cachedToolpath))
+    throw new Error(util.format('JSON schema binary not found in path', cachedToolpath))
   }
 
   fs.chmodSync(pluginPath, '777')
@@ -156,7 +142,7 @@ export function findPlugin(rootFolder: string): string {
   walkSync(rootFolder, filelist, pluginName + getExecutableExtension())
   if (!filelist || filelist.length == 0) {
     throw new Error(
-      util.format('Helm executable not found in path', rootFolder)
+      util.format('JSON schema executable not found in path', rootFolder)
     )
   } else {
     return filelist[0]
@@ -206,9 +192,8 @@ export async function run(): Promise<void> {
   } catch {
     //do nothing, set as output variable
   }
-
-  core.info(`Helm tool version '${version}' has been cached at ${cachedPath}`)
-  core.setOutput('helm-path', cachedPath)
+  core.info(`JSON schema binary '${version}' has been cached at ${cachedPath}`)
+  // core.setOutput('helm-path', cachedPath)
 
   // const helmSchemaCommand = `helm schema -input ${input} -output ${output} -draft ${draft}`
   // try {
