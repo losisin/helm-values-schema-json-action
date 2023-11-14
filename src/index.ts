@@ -57,12 +57,12 @@ export function findPlugin(pluginFolder: string): string {
   const targetFileName = pluginName + executableExtension
 
   const foundFiles = files.filter(file => {
-    const filePath = path.join(pluginFolder, file);
+    const filePath = path.join(pluginFolder, file)
     if (fs.statSync(filePath).isDirectory()) {
-      return false;
+      return false
     }
-    return file === targetFileName;
-  });
+    return file === targetFileName
+  })
 
   if (foundFiles.length === 0) {
     throw new Error(
