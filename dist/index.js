@@ -29643,32 +29643,32 @@ function getPlugin(version) {
     const operatingSystem = os.type();
     switch (true) {
         case operatingSystem == LINUX && arch == ARM64:
-            return util.format('%s%s/helm-values-schema-json_%s_linux_arm64.tgz', pluginReleaseURL, version, version.substring(1));
+            return util.format('%s%s/helm-values-schema-json_%s_linux_arm64.tgz', pluginReleaseURL, pluginVersion, pluginVersion.substring(1));
         case operatingSystem == LINUX:
-            return util.format('%s%s/helm-values-schema-json_%s_linux_amd64.tgz', pluginReleaseURL, version, version.substring(1));
+            return util.format('%s%s/helm-values-schema-json_%s_linux_amd64.tgz', pluginReleaseURL, pluginVersion, pluginVersion.substring(1));
         case operatingSystem == MAC_OS && arch == ARM64:
-            return util.format('%s%s/helm-values-schema-json_%s_darwin_arm64.tgz', pluginReleaseURL, version, version.substring(1));
+            return util.format('%s%s/helm-values-schema-json_%s_darwin_arm64.tgz', pluginReleaseURL, pluginVersion, pluginVersion.substring(1));
         case operatingSystem == MAC_OS:
-            return util.format('%s%s/helm-values-schema-json_%s_darwin_amd64.tgz', pluginReleaseURL, version, version.substring(1));
+            return util.format('%s%s/helm-values-schema-json_%s_darwin_amd64.tgz', pluginReleaseURL, pluginVersion, pluginVersion.substring(1));
         case operatingSystem == WINDOWS:
         default:
-            return util.format('%s%s/helm-values-schema-json_%s_windows_amd64.tgz', pluginReleaseURL, version, version.substring(1));
+            return util.format('%s%s/helm-values-schema-json_%s_windows_amd64.tgz', pluginReleaseURL, pluginVersion, pluginVersion.substring(1));
     }
 }
 exports.getPlugin = getPlugin;
-async function installPlugin(version) {
-    let cachedToolpath = tc.find(pluginName, version);
+async function installPlugin(pluginVersion) {
+    let cachedToolpath = tc.find(pluginName, pluginVersion);
     if (!cachedToolpath) {
         let helmDownloadPath;
         try {
-            helmDownloadPath = await tc.downloadTool(getPlugin(version));
+            helmDownloadPath = await tc.downloadTool(getPlugin(pluginVersion));
         }
         catch (exception) {
-            throw new Error(`Failed to download JSON schema binary from: ${getPlugin(version)}`);
+            throw new Error(`Failed to download JSON schema binary from: ${getPlugin(pluginVersion)}`);
         }
         fs.chmodSync(helmDownloadPath, '777');
         const unTaredPath = await tc.extractTar(helmDownloadPath);
-        cachedToolpath = await tc.cacheDir(unTaredPath, pluginName, version);
+        cachedToolpath = await tc.cacheDir(unTaredPath, pluginName, pluginVersion);
     }
     const pluginPath = findPlugin(cachedToolpath);
     if (!pluginPath) {
@@ -29709,7 +29709,6 @@ var walkSync = function (dir, filelist, fileToFind) {
 exports.walkSync = walkSync;
 async function run() {
     // try {
-    const version = '0.2.0';
     const input = core.getInput('input');
     const draft = core.getInput('draft');
     const output = core.getInput('output');
@@ -29718,8 +29717,8 @@ async function run() {
     const gitPushUserEmail = core.getInput('git-push-user-email');
     const gitCommitMessage = core.getInput('git-commit-message');
     const failOnDiff = core.getInput('fail-on-diff');
-    core.startGroup(`Downloading ${version}`);
-    const cachedPath = await installPlugin(version);
+    core.startGroup(`Downloading JSON schema ${pluginVersion}`);
+    const cachedPath = await installPlugin(pluginVersion);
     core.endGroup();
     try {
         if (!process.env['PATH']?.startsWith(path.dirname(cachedPath))) {
@@ -29729,7 +29728,7 @@ async function run() {
     catch {
         //do nothing, set as output variable
     }
-    core.info(`JSON schema binary '${version}' has been cached at ${cachedPath}`);
+    core.info(`JSON schema binary '${pluginVersion}' has been cached at ${cachedPath}`);
     // core.setOutput('helm-path', cachedPath)
     // const helmSchemaCommand = `helm schema -input ${input} -output ${output} -draft ${draft}`
     // try {

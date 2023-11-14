@@ -98,56 +98,56 @@ export function getPlugin(version: string): string {
       return util.format(
         '%s%s/helm-values-schema-json_%s_linux_arm64.tgz',
         pluginReleaseURL,
-        version,
-        version.substring(1)
+        pluginVersion,
+        pluginVersion.substring(1)
       )
     case operatingSystem == LINUX:
       return util.format(
         '%s%s/helm-values-schema-json_%s_linux_amd64.tgz',
         pluginReleaseURL,
-        version,
-        version.substring(1)
+        pluginVersion,
+        pluginVersion.substring(1)
       )
     case operatingSystem == MAC_OS && arch == ARM64:
       return util.format(
         '%s%s/helm-values-schema-json_%s_darwin_arm64.tgz',
         pluginReleaseURL,
-        version,
-        version.substring(1)
+        pluginVersion,
+        pluginVersion.substring(1)
       )
     case operatingSystem == MAC_OS:
       return util.format(
         '%s%s/helm-values-schema-json_%s_darwin_amd64.tgz',
         pluginReleaseURL,
-        version,
-        version.substring(1)
+        pluginVersion,
+        pluginVersion.substring(1)
       )
     case operatingSystem == WINDOWS:
     default:
       return util.format(
         '%s%s/helm-values-schema-json_%s_windows_amd64.tgz',
         pluginReleaseURL,
-        version,
-        version.substring(1)
+        pluginVersion,
+        pluginVersion.substring(1)
       )
   }
 }
 
-export async function installPlugin(version: string): Promise<string> {
-  let cachedToolpath = tc.find(pluginName, version)
+export async function installPlugin(pluginVersion: string): Promise<string> {
+  let cachedToolpath = tc.find(pluginName, pluginVersion)
   if (!cachedToolpath) {
     let helmDownloadPath
     try {
-      helmDownloadPath = await tc.downloadTool(getPlugin(version))
+      helmDownloadPath = await tc.downloadTool(getPlugin(pluginVersion))
     } catch (exception) {
       throw new Error(
-        `Failed to download JSON schema binary from: ${getPlugin(version)}`
+        `Failed to download JSON schema binary from: ${getPlugin(pluginVersion)}`
       )
     }
 
     fs.chmodSync(helmDownloadPath, '777')
     const unTaredPath = await tc.extractTar(helmDownloadPath)
-    cachedToolpath = await tc.cacheDir(unTaredPath, pluginName, version)
+    cachedToolpath = await tc.cacheDir(unTaredPath, pluginName, pluginVersion)
   }
 
   const pluginPath = findPlugin(cachedToolpath)
@@ -196,7 +196,6 @@ export var walkSync = function (
 
 export async function run(): Promise<void> {
   // try {
-  const version = '0.2.0'
   const input = core.getInput('input')
   const draft = core.getInput('draft')
   const output = core.getInput('output')
@@ -206,8 +205,8 @@ export async function run(): Promise<void> {
   const gitCommitMessage = core.getInput('git-commit-message')
   const failOnDiff = core.getInput('fail-on-diff')
 
-  core.startGroup(`Downloading ${version}`)
-  const cachedPath = await installPlugin(version)
+  core.startGroup(`Downloading JSON schema ${pluginVersion}`)
+  const cachedPath = await installPlugin(pluginVersion)
   core.endGroup()
 
   try {
@@ -217,7 +216,7 @@ export async function run(): Promise<void> {
   } catch {
     //do nothing, set as output variable
   }
-  core.info(`JSON schema binary '${version}' has been cached at ${cachedPath}`)
+  core.info(`JSON schema binary '${pluginVersion}' has been cached at ${cachedPath}`)
   // core.setOutput('helm-path', cachedPath)
 
   // const helmSchemaCommand = `helm schema -input ${input} -output ${output} -draft ${draft}`
