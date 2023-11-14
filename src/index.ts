@@ -74,9 +74,9 @@ export function findPlugin(pluginFolder: string): string {
 }
 
 export async function run(): Promise<void> {
-  const input = core.getInput('input') || '__tests__/values.yaml'
-  const draft = core.getInput('draft') || '2020'
-  const output = core.getInput('output') || 'values.schema.json'
+  const input = core.getInput('input')
+  const draft = core.getInput('draft')
+  const output = core.getInput('output')
   const gitPush = core.getInput('git-push')
   const gitPushUserName = core.getInput('git-push-user-name')
   const gitPushUserEmail = core.getInput('git-push-user-email')
@@ -118,7 +118,7 @@ export async function run(): Promise<void> {
         await git.addConfig('user.email', gitPushUserEmail)
         await git.add([output])
         await git.commit(gitCommitMessage)
-        await git.push()
+        // await git.push()
         core.info(`Pushed '${output}' to the branch.`)
         break
       default:
