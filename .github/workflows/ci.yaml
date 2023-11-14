@@ -59,7 +59,7 @@ jobs:
         id: test-action
         uses: ./
         with:
-          input: __tests__/values.yaml
+          input: __tests__/fixtures/values.yaml
 
       - name: Print Output
         id: output
