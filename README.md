@@ -1,6 +1,7 @@
 # helm-values-schema-json GitHub Actions
 
-[![Continuous Integration](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml)
+[![CI](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml)
+[![coverage](https://github.com/losisin/helm-values-schema-json-action/blob/main/badges/coverage.svg)](https://github.com/losisin/helm-values-schema-json-action/blob/main/badges/coverage.svg)
 [![Static Badge](https://img.shields.io/badge/licence%20-%20MIT-green)](https://github.com/losisin/helm-values-schema-json-action/blob/add-Makefile/LICENSE)
 [![GitHub release (with filter)](https://img.shields.io/github/v/release/losisin/helm-values-schema-json-action)](https://github.com/losisin/helm-values-schema-json-action/releases)
 
