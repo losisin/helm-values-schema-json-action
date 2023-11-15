@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml)
 [![codecov](https://codecov.io/gh/losisin/helm-values-schema-json-action/graph/badge.svg?token=0QQVCFJH84)](https://codecov.io/gh/losisin/helm-values-schema-json-action)
-[![Static Badge](https://img.shields.io/badge/licence%20-%20MIT-green)](https://github.com/losisin/helm-values-schema-json-action/blob/add-Makefile/LICENSE)
+[![Static Badge](https://img.shields.io/badge/licence%20-%20MIT-green)](https://github.com/losisin/helm-values-schema-json-action/blob/main/LICENSE)
 [![GitHub release (with filter)](https://img.shields.io/github/v/release/losisin/helm-values-schema-json-action)](https://github.com/losisin/helm-values-schema-json-action/releases)
 
 A GitHub action to generate values schema json file by using helm plugin [helm-values-schema-json](https://github.com/losisin/helm-values-schema-json). It always uses latetst version of the plugin.
