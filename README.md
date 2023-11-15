@@ -1,6 +1,7 @@
 # helm-values-schema-json GitHub Actions
 
-[![Continuous Integration](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml)
+[![CI](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/losisin/helm-values-schema-json-action/actions/workflows/ci.yaml)
+[![codecov](https://codecov.io/gh/losisin/helm-values-schema-json-action/graph/badge.svg?token=0QQVCFJH84)](https://codecov.io/gh/losisin/helm-values-schema-json-action)
 [![Static Badge](https://img.shields.io/badge/licence%20-%20MIT-green)](https://github.com/losisin/helm-values-schema-json-action/blob/add-Makefile/LICENSE)
 [![GitHub release (with filter)](https://img.shields.io/github/v/release/losisin/helm-values-schema-json-action)](https://github.com/losisin/helm-values-schema-json-action/releases)
 
@@ -34,14 +35,20 @@ jobs:
 
 | Name | Description | Default | Required |
 |------|-------------|---------|----------|
-| input | Input value file. Can be single or comma-separated list of yaml files | `values.yaml` | true |
-| draft | Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020 | `2020` | false |
-| output | Output filename with path to store the generated schema | `values.schema.json` | false |
-| git-push | If true it will commit and push the changes (ignored if `fail-on-diff` is set) | `false` | false |
-| git-push-user-name | If empty the name of the GitHub Actions bot will be used | `github-actions[bot]` | false |
-| git-push-user-email | If empty the no-reply email of the GitHub Actions bot will be used | `github-actions[bot]@users.noreply.github.com` | false |
-| git-commit-message | Commit message | `update values.schema.json` | false |
-| fail-on-diff | Fail the job if there is any diff found between the generated output and existing file | `false` | false |
+| `input` | Input value file. Can be single or comma-separated list of yaml files | `values.yaml` | true |
+| `draft` | Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020 | `2020` | false |
+| `output` | Output filename with path to store the generated schema | `values.schema.json` | false |
+| `git-push` | If true it will commit and push the changes (ignored if `fail-on-diff` is set) | `false` | false |
+| `git-push-user-name` | If empty the name of the GitHub Actions bot will be used | `github-actions[bot]` | false |
+| `git-push-user-email` | If empty the no-reply email of the GitHub Actions bot will be used | `github-actions[bot]@users.noreply.github.com` | false |
+| `git-commit-message` | Commit message | `update values.schema.json` | false |
+| `fail-on-diff` | Fail the job if there is any diff found between the generated output and existing file | `false` | false |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| `plugin-path` | Path to the cached JSON schema binary |
 
 ## Examples
 

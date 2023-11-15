@@ -43,6 +43,12 @@ jobs:
         id: npm-ci-test
         run: npm run ci-test
 
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+
   test-action:
     name: GitHub Actions Test
     runs-on: ${{ matrix.os }}
@@ -55,13 +61,12 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: Set Helm
-        uses: azure/setup-helm@v3
-        with:
-          version: v3.12.1
-
-      - name: Test Action
+      - name: Test Local Action
         id: test-action
         uses: ./
         with:
-          input: __tests__/values.yaml
+          input: __tests__/fixtures/values.yaml
+
+      - name: Print Output
+        id: output
+        run: echo "${{ steps.test-action.outputs.plugin-path }}"

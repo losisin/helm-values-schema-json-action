@@ -32,7 +32,7 @@
     "lint": "npx eslint . -c ./.github/linters/.eslintrc.yaml",
     "package": "ncc build src/index.ts --license licenses.txt",
     "package:watch": "npm run package -- --watch",
-    "test": "jest --no-cache",
+    "test": "jest",
     "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
   },
   "license": "MIT",
@@ -67,6 +67,8 @@
   },
   "dependencies": {
     "@actions/core": "^1.10.1",
+    "@actions/exec": "^1.1.1",
+    "@actions/tool-cache": "^2.0.1",
     "simple-git": "^3.20.0"
   },
   "devDependencies": {
