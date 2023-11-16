@@ -33751,9 +33751,6 @@ async function installPlugin(pluginVersion) {
         cachedPluginpath = await tc.cacheDir(unTaredPath, pluginName, pluginVersion);
     }
     const pluginPath = findPlugin(cachedPluginpath);
-    if (!pluginPath) {
-        throw new Error(util.format('JSON schema binary not found in path: ${cachedPluginpath}'));
-    }
     fs.chmodSync(pluginPath, '777');
     return pluginPath;
 }
@@ -33870,7 +33867,6 @@ async function run() {
         }
     }
     catch (error) {
-        // Fail the workflow run if an error occurs
         if (error instanceof Error)
             core.setFailed(error.message);
     }

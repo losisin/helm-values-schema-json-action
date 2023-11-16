@@ -40,9 +40,6 @@ describe('run function', () => {
     installPluginMock = installPlugin as unknown as jest.MockedFunction<
       typeof installPlugin
     >
-
-    process.env['PATH'] = '/usr/local/bin'
-    process.env['GITHUB_WORKSPACE'] = '/github/workspace'
   })
 
   it('should handle success scenario', async () => {
@@ -161,5 +158,42 @@ describe('run function', () => {
     await run()
 
     expect(core.setFailed).toHaveBeenCalledWith(errorMessage)
+  })
+
+  it("should handle both git-push and fail-on-diff set to 'false', but schema generated", async () => {
+    installPluginMock.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      'git-push': 'false',
+      'fail-on-diff': 'false',
+      output: 'output',
+      input: 'input',
+      draft: 'draft'
+    }
+
+    getInputMock.mockImplementation((inputName: string) => {
+      return inputMap[inputName]
+    })
+
+    const gitMock: jest.Mocked<SimpleGit> = {
+      status: jest.fn().mockResolvedValue({
+        files: [{ path: 'output' }]
+      })
+    } as any
+
+    simpleGitMock.mockReturnValue(gitMock)
+
+    await run()
+
+    expect(installPluginMock).toHaveBeenCalledTimes(1)
+    expect(getInputMock).toHaveBeenCalledWith('input')
+    expect(getInputMock).toHaveBeenCalledWith('output')
+    expect(getInputMock).toHaveBeenCalledWith('draft')
+    expect(getInputMock).toHaveBeenCalledWith('git-push')
+    expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
+    expect(execMock).toHaveBeenCalledTimes(1)
+    expect(gitMock.status).toHaveBeenCalledTimes(1)
+    expect(infoMock).toHaveBeenLastCalledWith(
+      "'output' has changed, but no action was requested."
+    )
   })
 })

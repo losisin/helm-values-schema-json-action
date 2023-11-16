@@ -36,11 +36,6 @@ export async function installPlugin(pluginVersion: string): Promise<string> {
   }
 
   const pluginPath = findPlugin(cachedPluginpath)
-  if (!pluginPath) {
-    throw new Error(
-      util.format('JSON schema binary not found in path: ${cachedPluginpath}')
-    )
-  }
 
   fs.chmodSync(pluginPath, '777')
   return pluginPath

@@ -27,7 +27,7 @@ describe('getPlugin tests', () => {
   })
 
   it('should return the correct url for Windows_NT and arm64 arch', () => {
-    const osType = 'windows'
+    const osType = 'Windows_NT'
     const osArch = 'arm64'
     const windowsURL = util.format(
       'https://github.com/losisin/%s/releases/download/%s/%s_%s_%s_%s.tgz',
@@ -47,7 +47,7 @@ describe('getPlugin tests', () => {
   })
 
   it('should return the correct url for Linux and arm64 arch', () => {
-    const osType = 'linux'
+    const osType = 'Linux'
     const osArch = 'arm64'
     const windowsURL = util.format(
       'https://github.com/losisin/%s/releases/download/%s/%s_%s_%s_%s.tgz',
@@ -67,7 +67,7 @@ describe('getPlugin tests', () => {
   })
 
   it('should return the correct url for MAC_OS and amd64 arch', () => {
-    const osType = 'darwin'
+    const osType = 'Darwin'
     const osArch = 'amd64'
     const windowsURL = util.format(
       'https://github.com/losisin/%s/releases/download/%s/%s_%s_%s_%s.tgz',
@@ -123,7 +123,7 @@ describe('installPlugin', () => {
   })
 
   it('finds schema plugin from the cache if it is already cached', async () => {
-    ;(os.type as jest.Mock).mockReturnValue('Linux')
+    ;(os.type as jest.Mock).mockReturnValue('Darwin')
     ;(tc.find as jest.Mock).mockReturnValue('/cached/plugin')
     ;(fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => false })
 
@@ -152,7 +152,7 @@ describe('findPlugin', () => {
     const directoryName = 'a_subdirectory'
     const pluginFolder = '/some/dir'
 
-    ;(os.type as jest.Mock).mockReturnValue('Linux')
+    ;(os.type as jest.Mock).mockReturnValue('Windows_NT')
     ;(fs.readdirSync as jest.Mock).mockReturnValue([directoryName])
     ;(fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true })
 
