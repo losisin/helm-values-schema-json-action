@@ -121,7 +121,7 @@ describe('run function', () => {
 
     await run()
 
-    expect(installPluginMock).toHaveBeenCalledWith('v0.2.0')
+    expect(installPluginMock).toHaveBeenCalledWith('v0.2.1')
     expect(getInputMock).toHaveBeenCalledWith('input')
     expect(getInputMock).toHaveBeenCalledWith('draft')
     expect(getInputMock).toHaveBeenCalledWith('output')
