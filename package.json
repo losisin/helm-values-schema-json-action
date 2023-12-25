@@ -1,21 +1,22 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "helm-values-schema-json",
+  "description": "A GitHub action to generate values schema json file by using helm-values-schema-json plugin",
   "version": "0.0.0",
   "author": "",
   "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/losisin/helm-values-schema-json",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/losisin/helm-values-schema-json.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/losisin/helm-values-schema-json/issues"
   },
   "keywords": [
     "actions",
     "node",
-    "setup"
+    "helm",
+    "json-schema"
   ],
   "exports": {
     ".": "./dist/index.js"
