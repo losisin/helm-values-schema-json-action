@@ -4,7 +4,7 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { simpleGit } from 'simple-git'
 
-const version = 'v1.2.4'
+const version = 'v1.3.0'
 
 /**
  * The main function for the action.
@@ -15,6 +15,7 @@ export async function run(): Promise<void> {
     const input = core.getInput('input')
     const draft = core.getInput('draft')
     const output = core.getInput('output')
+    const indent = core.getInput('indent')
     const gitPush = core.getInput('git-push')
     const gitPushUserName = core.getInput('git-push-user-name')
     const gitPushUserEmail = core.getInput('git-push-user-email')
@@ -39,7 +40,9 @@ export async function run(): Promise<void> {
       '-output',
       output,
       '-draft',
-      draft
+      draft,
+      '-indent',
+      indent
     ])
 
     const git = simpleGit()

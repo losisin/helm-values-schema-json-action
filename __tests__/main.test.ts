@@ -56,6 +56,7 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('input')
     expect(getInputMock).toHaveBeenCalledWith('draft')
     expect(getInputMock).toHaveBeenCalledWith('output')
+    expect(getInputMock).toHaveBeenCalledWith('indent')
     expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
     expect(execMock).toHaveBeenCalledTimes(1)
     expect(gitMock.status).toHaveBeenCalledTimes(1)
@@ -100,7 +101,8 @@ describe('run function', () => {
       'git-commit-message': 'message',
       output: 'output',
       input: 'input',
-      draft: 'draft'
+      draft: 'draft',
+      indent: 'indent'
     }
 
     getInputMock.mockImplementation((inputName: string) => {
@@ -121,10 +123,11 @@ describe('run function', () => {
 
     await run()
 
-    expect(installPluginMock).toHaveBeenCalledWith('v1.2.4')
+    expect(installPluginMock).toHaveBeenCalledWith('v1.3.0')
     expect(getInputMock).toHaveBeenCalledWith('input')
     expect(getInputMock).toHaveBeenCalledWith('draft')
     expect(getInputMock).toHaveBeenCalledWith('output')
+    expect(getInputMock).toHaveBeenCalledWith('indent')
     expect(getInputMock).toHaveBeenCalledWith('git-push')
     expect(getInputMock).toHaveBeenCalledWith('git-push-user-name')
     expect(getInputMock).toHaveBeenCalledWith('git-push-user-email')
@@ -167,7 +170,8 @@ describe('run function', () => {
       'fail-on-diff': 'false',
       output: 'output',
       input: 'input',
-      draft: 'draft'
+      draft: 'draft',
+      indent: 'indent'
     }
 
     getInputMock.mockImplementation((inputName: string) => {
@@ -188,6 +192,7 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('input')
     expect(getInputMock).toHaveBeenCalledWith('output')
     expect(getInputMock).toHaveBeenCalledWith('draft')
+    expect(getInputMock).toHaveBeenCalledWith('indent')
     expect(getInputMock).toHaveBeenCalledWith('git-push')
     expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
     expect(execMock).toHaveBeenCalledTimes(1)

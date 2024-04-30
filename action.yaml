@@ -9,6 +9,10 @@ inputs:
     description: Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020
     required: false
     default: 2020
+  indent:
+    description: Indentation spaces (even number)
+    required: false
+    default: 4
   output:
     description: Output file name with path to store the generated schema
     required: false
