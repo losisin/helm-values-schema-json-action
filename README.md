@@ -38,6 +38,7 @@ jobs:
 | `input` | Input value file. Can be single or comma-separated list of yaml files | `values.yaml` | true |
 | `draft` | Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020 | `2020` | false |
 | `output` | Output filename with path to store the generated schema | `values.schema.json` | false |
+| `indent` | Indentation spaces (even number) | `4` | false |
 | `git-push` | If true it will commit and push the changes (ignored if `fail-on-diff` is set) | `false` | false |
 | `git-push-user-name` | If empty the name of the GitHub Actions bot will be used | `github-actions[bot]` | false |
 | `git-push-user-email` | If empty the no-reply email of the GitHub Actions bot will be used | `github-actions[bot]@users.noreply.github.com` | false |
@@ -143,6 +144,7 @@ jobs:
           input: values.yaml,${GITHUB_WORKSPACE}/values2.yaml
           output: my.output.json
           draft: 7
+          indent: 2
 ```
 
 ### Overwrite default schema and/or output file

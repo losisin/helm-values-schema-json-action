@@ -35044,7 +35044,7 @@ const fs = __importStar(__nccwpck_require__(7147));
 const tc = __importStar(__nccwpck_require__(7784));
 const pluginName = 'schema';
 const pluginRepository = 'helm-values-schema-json';
-const version = 'v1.2.4';
+const version = 'v1.3.0';
 function getPlugin(pluginVersion) {
     const osArch = os.arch();
     const osType = os.type();
@@ -35123,7 +35123,7 @@ const install_1 = __nccwpck_require__(1649);
 const core = __importStar(__nccwpck_require__(2186));
 const exec = __importStar(__nccwpck_require__(1514));
 const simple_git_1 = __nccwpck_require__(9103);
-const version = 'v1.2.4';
+const version = 'v1.3.0';
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -35133,6 +35133,7 @@ async function run() {
         const input = core.getInput('input');
         const draft = core.getInput('draft');
         const output = core.getInput('output');
+        const indent = core.getInput('indent');
         const gitPush = core.getInput('git-push');
         const gitPushUserName = core.getInput('git-push-user-name');
         const gitPushUserEmail = core.getInput('git-push-user-email');
@@ -35151,7 +35152,9 @@ async function run() {
             '-output',
             output,
             '-draft',
-            draft
+            draft,
+            '-indent',
+            indent
         ]);
         const git = (0, simple_git_1.simpleGit)();
         const statusSummary = await git.status();
