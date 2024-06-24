@@ -35087,7 +35087,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.findPlugin = exports.installPlugin = exports.getPlugin = void 0;
+exports.getPlugin = getPlugin;
+exports.installPlugin = installPlugin;
+exports.findPlugin = findPlugin;
 const os = __importStar(__nccwpck_require__(2037));
 const path = __importStar(__nccwpck_require__(1017));
 const util = __importStar(__nccwpck_require__(3837));
@@ -35095,7 +35097,7 @@ const fs = __importStar(__nccwpck_require__(7147));
 const tc = __importStar(__nccwpck_require__(7784));
 const pluginName = 'schema';
 const pluginRepository = 'helm-values-schema-json';
-const version = 'v1.4.1';
+const version = 'v1.5.0';
 function getPlugin(pluginVersion) {
     const osArch = os.arch();
     const osType = os.type();
@@ -35103,7 +35105,6 @@ function getPlugin(pluginVersion) {
     const archKey = osArch === 'arm64' ? 'arm64' : 'amd64';
     return util.format('https://github.com/losisin/%s/releases/download/%s/%s_%s_%s_%s.tgz', pluginRepository, pluginVersion, pluginRepository, pluginVersion.substring(1), platformKey, archKey);
 }
-exports.getPlugin = getPlugin;
 async function installPlugin(pluginVersion) {
     let cachedPluginpath = tc.find(pluginName, pluginVersion);
     if (!cachedPluginpath) {
@@ -35116,7 +35117,6 @@ async function installPlugin(pluginVersion) {
     fs.chmodSync(pluginPath, '777');
     return pluginPath;
 }
-exports.installPlugin = installPlugin;
 function findPlugin(pluginFolder) {
     fs.chmodSync(pluginFolder, '777');
     const files = fs.readdirSync(pluginFolder);
@@ -35134,7 +35134,6 @@ function findPlugin(pluginFolder) {
     }
     return path.join(pluginFolder, foundFiles[0]);
 }
-exports.findPlugin = findPlugin;
 
 
 /***/ }),
@@ -35168,13 +35167,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = void 0;
+exports.run = run;
 const path = __importStar(__nccwpck_require__(1017));
 const install_1 = __nccwpck_require__(1649);
 const core = __importStar(__nccwpck_require__(2186));
 const exec = __importStar(__nccwpck_require__(1514));
 const simple_git_1 = __nccwpck_require__(9103);
-const version = 'v1.4.1';
+const version = 'v1.5.0';
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -35236,7 +35235,6 @@ async function run() {
             core.setFailed(error.message);
     }
 }
-exports.run = run;
 
 
 /***/ }),
