@@ -42,7 +42,7 @@ jobs:
 | `id` | ID of the schema | `''` | false |
 | `title` | Title of the schema | `''` | false |
 | `description` | Description of the schema | `''` | false |
-| `additionalProperties` | Additional properties allowed in the schema (bool) | `` | false |
+| `additionalProperties` | Additional properties allowed in the schema (bool) | `''` | false |
 | `git-push` | If true it will commit and push the changes (ignored if `fail-on-diff` is set) | `false` | false |
 | `git-push-user-name` | If empty the name of the GitHub Actions bot will be used | `github-actions[bot]` | false |
 | `git-push-user-email` | If empty the no-reply email of the GitHub Actions bot will be used | `github-actions[bot]@users.noreply.github.com` | false |
