@@ -35097,7 +35097,7 @@ const fs = __importStar(__nccwpck_require__(7147));
 const tc = __importStar(__nccwpck_require__(7784));
 const pluginName = 'schema';
 const pluginRepository = 'helm-values-schema-json';
-const version = 'v1.5.0';
+const version = 'v1.5.1';
 function getPlugin(pluginVersion) {
     const osArch = os.arch();
     const osType = os.type();
@@ -35173,7 +35173,7 @@ const install_1 = __nccwpck_require__(1649);
 const core = __importStar(__nccwpck_require__(2186));
 const exec = __importStar(__nccwpck_require__(1514));
 const simple_git_1 = __nccwpck_require__(9103);
-const version = 'v1.5.0';
+const version = 'v1.5.1';
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -35184,6 +35184,10 @@ async function run() {
         const draft = core.getInput('draft');
         const output = core.getInput('output');
         const indent = core.getInput('indent');
+        const id = core.getInput('id');
+        const title = core.getInput('title');
+        const description = core.getInput('description');
+        const additionalProperties = core.getInput('additional-properties');
         const gitPush = core.getInput('git-push');
         const gitPushUserName = core.getInput('git-push-user-name');
         const gitPushUserEmail = core.getInput('git-push-user-email');
@@ -35196,7 +35200,7 @@ async function run() {
             core.addPath(path.dirname(cachedPath));
         core.info(`JSON schema binary '${version}' has been cached at ${cachedPath}`);
         core.setOutput('plugin-path', cachedPath);
-        await exec.exec('schema', [
+        const args = [
             '-input',
             input,
             '-output',
@@ -35205,7 +35209,20 @@ async function run() {
             draft,
             '-indent',
             indent
-        ]);
+        ];
+        if (id) {
+            args.push('-schemaRoot.id', id);
+        }
+        if (title) {
+            args.push('-schemaRoot.title', title);
+        }
+        if (description) {
+            args.push('-schemaRoot.description', description);
+        }
+        if (additionalProperties) {
+            args.push('-schemaRoot.additionalProperties', additionalProperties);
+        }
+        await exec.exec('schema', args);
         const git = (0, simple_git_1.simpleGit)();
         const statusSummary = await git.status();
         const outputStatus = statusSummary.files.find(file => file.path === output);

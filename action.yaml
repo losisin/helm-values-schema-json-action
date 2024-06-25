@@ -17,6 +17,18 @@ inputs:
     description: Output file name with path to store the generated schema
     required: false
     default: values.schema.json
+  id:
+    description: ID of the schema
+    required: false
+  title:
+    description: Title of the schema
+    required: false
+  description:
+    description: Description of the schema
+    required: false
+  additionalProperties:
+    description: Additional properties allowed in the schema
+    required: false
   git-push:
     description: If true it will commit and push the changes (ignored if `fail-on-diff` is set)
     required: false

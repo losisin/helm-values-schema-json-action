@@ -4,7 +4,7 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { simpleGit } from 'simple-git'
 
-const version = 'v1.5.0'
+const version = 'v1.5.1'
 
 /**
  * The main function for the action.
@@ -16,6 +16,10 @@ export async function run(): Promise<void> {
     const draft = core.getInput('draft')
     const output = core.getInput('output')
     const indent = core.getInput('indent')
+    const id = core.getInput('id')
+    const title = core.getInput('title')
+    const description = core.getInput('description')
+    const additionalProperties = core.getInput('additional-properties')
     const gitPush = core.getInput('git-push')
     const gitPushUserName = core.getInput('git-push-user-name')
     const gitPushUserEmail = core.getInput('git-push-user-email')
@@ -34,7 +38,7 @@ export async function run(): Promise<void> {
     )
     core.setOutput('plugin-path', cachedPath)
 
-    await exec.exec('schema', [
+    const args = [
       '-input',
       input,
       '-output',
@@ -43,7 +47,25 @@ export async function run(): Promise<void> {
       draft,
       '-indent',
       indent
-    ])
+    ]
+
+    if (id) {
+      args.push('-schemaRoot.id', id)
+    }
+
+    if (title) {
+      args.push('-schemaRoot.title', title)
+    }
+
+    if (description) {
+      args.push('-schemaRoot.description', description)
+    }
+
+    if (additionalProperties) {
+      args.push('-schemaRoot.additionalProperties', additionalProperties)
+    }
+
+    await exec.exec('schema', args)
 
     const git = simpleGit()
     const statusSummary = await git.status()

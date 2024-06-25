@@ -11,6 +11,7 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { simpleGit, SimpleGit } from 'simple-git'
 import { installPlugin } from '../src/install'
+import { title } from 'process'
 
 jest.mock('@actions/core')
 jest.mock('@actions/exec')
@@ -102,7 +103,10 @@ describe('run function', () => {
       output: 'output',
       input: 'input',
       draft: 'draft',
-      indent: 'indent'
+      indent: 'indent',
+      id: 'id',
+      title: 'title',
+      description: 'description'
     }
 
     getInputMock.mockImplementation((inputName: string) => {
@@ -123,11 +127,14 @@ describe('run function', () => {
 
     await run()
 
-    expect(installPluginMock).toHaveBeenCalledWith('v1.5.0')
+    expect(installPluginMock).toHaveBeenCalledWith('v1.5.1')
     expect(getInputMock).toHaveBeenCalledWith('input')
     expect(getInputMock).toHaveBeenCalledWith('draft')
     expect(getInputMock).toHaveBeenCalledWith('output')
     expect(getInputMock).toHaveBeenCalledWith('indent')
+    expect(getInputMock).toHaveBeenCalledWith('id')
+    expect(getInputMock).toHaveBeenCalledWith('title')
+    expect(getInputMock).toHaveBeenCalledWith('description')
     expect(getInputMock).toHaveBeenCalledWith('git-push')
     expect(getInputMock).toHaveBeenCalledWith('git-push-user-name')
     expect(getInputMock).toHaveBeenCalledWith('git-push-user-email')
