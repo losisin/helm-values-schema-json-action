@@ -30,8 +30,9 @@ export async function run(): Promise<void> {
     const cachedPath = await installPlugin(version)
     core.endGroup()
 
-    process.env['PATH']?.startsWith(path.dirname(cachedPath)) ||
+    if (!process.env['PATH']?.startsWith(path.dirname(cachedPath))) {
       core.addPath(path.dirname(cachedPath))
+    }
 
     core.info(
       `JSON schema binary '${version}' has been cached at ${cachedPath}`
