@@ -48,6 +48,8 @@ jobs:
 | `git-push-user-email` | If empty the no-reply email of the GitHub Actions bot will be used | `github-actions[bot]@users.noreply.github.com` | false |
 | `git-commit-message` | Commit message | `update values.schema.json` | false |
 | `fail-on-diff` | Fail the job if there is any diff found between the generated output and existing file | `false` | false |
+| `working-directory` | Working directory to run the plugin from | `$GITHUB_WORKSPACE` | false |
+| `recursive` | Recursively generate schema from subdirectories | `false` | false |
 
 ## Outputs
 
@@ -170,6 +172,31 @@ jobs:
           input: values.yaml
           output: ${GITHUB_WORKSPACE}/my.output.json
           draft: 7
+```
+
+### Recursively generate schema from subdirectories
+
+> [!NOTE]
+> When recursive is set to `true`, then `input` and `output` should be relative to charts directories found under `working-directory`.
+
+```yaml
+name: Generate values schema json
+on:
+  - pull_request
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+      - name: Generate values schema json
+        uses: losisin/helm-values-schema-json-action@v1
+        with:
+          input: values.yaml
+          output: my.output.json
+          working-directory: ./charts
+          recursive: true
 ```
 
 ## Issues, Features, Feedback

@@ -49,6 +49,13 @@ inputs:
     description: Fail the job if there is any diff found between the generated output and existing file
     required: false
     default: 'false'
+  working-directory:
+    description: Working directory to run the plugin from. Default is $GITHUB_WORKSPACE
+    required: false
+  recursive:
+    description: Recursively generate schema from subdirectories
+    required: false
+    default: 'false'
 outputs:
    plugin-path:
       description: 'Path to the cached JSON schema binary'
