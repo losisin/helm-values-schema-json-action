@@ -4,7 +4,7 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { simpleGit } from 'simple-git'
 
-const version = 'v1.6.1'
+const version = 'v1.6.3'
 
 /**
  * The main function for the action.
