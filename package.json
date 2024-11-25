@@ -72,15 +72,15 @@
     "simple-git": "^3.27.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.13",
-    "@types/node": "^22.7.5",
-    "@typescript-eslint/eslint-plugin": "^8.8.1",
-    "@typescript-eslint/parser": "^8.8.1",
-    "@vercel/ncc": "^0.38.2",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.9.3",
+    "@typescript-eslint/eslint-plugin": "^8.15.0",
+    "@typescript-eslint/parser": "^8.15.0",
+    "@vercel/ncc": "^0.38.3",
     "eslint": "^8.57.1",
-    "eslint-plugin-github": "^5.0.2",
-    "eslint-plugin-jest": "^28.8.3",
-    "eslint-plugin-jsonc": "^2.16.0",
+    "eslint-plugin-github": "^5.1.1",
+    "eslint-plugin-jest": "^28.9.0",
+    "eslint-plugin-jsonc": "^2.18.2",
     "eslint-plugin-prettier": "^5.2.1",
     "jest": "^29.7.0",
     "js-yaml": "^4.1.0",
@@ -88,6 +88,6 @@
     "prettier": "^3.3.3",
     "prettier-eslint": "^16.3.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.6.2"
+    "typescript": "^5.7.2"
   }
 }
