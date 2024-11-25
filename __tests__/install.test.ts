@@ -23,7 +23,7 @@ describe('getPlugin tests', () => {
     jest.clearAllMocks()
 
     pluginRepository = 'helm-values-schema-json'
-    version = 'v1.6.3'
+    version = 'v1.6.4'
   })
 
   it('should return the correct url for Windows_NT and arm64 arch', () => {
@@ -95,7 +95,7 @@ describe('installPlugin', () => {
     jest.clearAllMocks()
 
     pluginName = 'schema'
-    version = 'v1.6.3'
+    version = 'v1.6.4'
   })
 
   it('installs schema plugin if it is not already cached', async () => {
