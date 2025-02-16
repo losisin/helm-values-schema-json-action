@@ -26,7 +26,7 @@ inputs:
   description:
     description: Description of the schema
     required: false
-  additionalProperties:
+  additional-properties:
     description: Additional properties allowed in the schema
     required: false
   git-push:
