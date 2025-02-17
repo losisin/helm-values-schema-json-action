@@ -74,7 +74,8 @@ describe('run function', () => {
     const gitMock: jest.Mocked<SimpleGit> = {
       status: jest.fn().mockResolvedValue({
         files: [{ path: 'a-random-string' }]
-      })
+      }),
+      diff: jest.fn().mockResolvedValue('- old \n+ new ')
     } as any
 
     simpleGitMock.mockReturnValue(gitMock)
@@ -88,7 +89,37 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
     expect(execMock).toHaveBeenCalledTimes(1)
     expect(gitMock.status).toHaveBeenCalledTimes(1)
+    expect(gitMock.diff).toHaveBeenCalledWith(['--', 'a-random-string'])
+    expect(infoMock).toHaveBeenCalledWith(
+      "Diff for 'a-random-string':\n- old \n+ new "
+    )
+    expect(setFailedMock).toHaveBeenCalledWith("'a-random-string' has changed")
+  })
 
+  it("should handle fail-on-diff === 'true' when diff fails", async () => {
+    installPluginMock.mockResolvedValue('/mocked/path')
+    getInputMock.mockImplementation((inputName: string) => {
+      if (inputName === 'fail-on-diff') {
+        return 'true'
+      }
+      return 'a-random-string'
+    })
+
+    const gitMock: jest.Mocked<SimpleGit> = {
+      status: jest.fn().mockResolvedValue({
+        files: [{ path: 'a-random-string' }]
+      }),
+      diff: jest.fn().mockRejectedValue(new Error('diff failed'))
+    } as any
+
+    simpleGitMock.mockReturnValue(gitMock)
+
+    await run()
+
+    expect(gitMock.diff).toHaveBeenCalledWith(['--', 'a-random-string'])
+    expect(infoMock).toHaveBeenCalledWith(
+      "Unable to get diff for 'a-random-string'"
+    )
     expect(setFailedMock).toHaveBeenCalledWith("'a-random-string' has changed")
   })
 
