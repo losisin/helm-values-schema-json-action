@@ -19,7 +19,7 @@ export async function run(): Promise<void> {
     const id = core.getInput('id')
     const title = core.getInput('title')
     const description = core.getInput('description')
-    const additionalProperties = core.getInput('additional-properties')
+    const additionalProperties = core.getInput('additionalProperties')
     const gitPush = core.getInput('git-push')
     const gitPushUserName = core.getInput('git-push-user-name')
     const gitPushUserEmail = core.getInput('git-push-user-email')
