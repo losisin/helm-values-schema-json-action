@@ -29,7 +29,6 @@ interface SchemaConfig {
 export async function run(): Promise<void> {
   try {
     const workingDirectory = core.getInput('working-directory')
-
     if (workingDirectory) {
       core.info(`Changing working directory to: ${workingDirectory}`)
       process.chdir(workingDirectory)
@@ -44,9 +43,9 @@ export async function run(): Promise<void> {
     }
 
     const input = core.getInput('input') || (configFile.input || []).join(',')
-    const draft = core.getInput('draft') || configFile.draft?.toString()
-    const output = core.getInput('output') || configFile.output
-    const indent = core.getInput('indent') || configFile.indent?.toString()
+    const draft = core.getInput('draft') || configFile.draft?.toString() || '2020'
+    const output = core.getInput('output') || configFile.output || 'values.schema.json'
+    const indent = core.getInput('indent') || configFile.indent?.toString() || '4'
     const id = core.getInput('id') || configFile.schemaRoot?.id
     const title = core.getInput('title') || configFile.schemaRoot?.title
     const description = core.getInput('description') || configFile.schemaRoot?.description
