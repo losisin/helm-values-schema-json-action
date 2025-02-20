@@ -10,12 +10,14 @@ import { run } from '../src/main'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { simpleGit, SimpleGit } from 'simple-git'
+import * as fs from 'fs/promises'
 import { installPlugin } from '../src/install'
 
 jest.mock('@actions/core')
 jest.mock('@actions/exec')
 jest.mock('simple-git')
 jest.mock('../src/install')
+jest.mock('fs/promises')
 
 describe('run function', () => {
   let getInputMock: jest.SpyInstance
@@ -26,6 +28,7 @@ describe('run function', () => {
   let setOutputMock: jest.SpyInstance
   let infoMock: jest.SpyInstance
   let mockChdir: jest.SpyInstance
+  let mockFs: jest.Mocked<typeof fs>
 
   beforeEach(() => {
     jest.restoreAllMocks()
@@ -38,6 +41,7 @@ describe('run function', () => {
     execMock = jest.spyOn(exec, 'exec').mockImplementation()
     simpleGitMock = simpleGit as unknown as jest.MockedFunction<typeof simpleGit>
     installPluginMock = installPlugin as unknown as jest.MockedFunction<typeof installPlugin>
+    mockFs = fs as unknown as jest.Mocked<typeof fs>
   })
 
   it('should handle success scenario', async () => {
@@ -236,5 +240,19 @@ describe('run function', () => {
     await run()
 
     expect(infoMock).toHaveBeenLastCalledWith("'output' has changed, but no action was requested.")
+  })
+
+  it('should handle .schema.yaml configuration', async () => {
+    mockFs.readFile.mockResolvedValue('title: My Schema\ndescription: Test schema')
+    installPluginMock.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      output: 'output',
+      input: 'input'
+    }
+    getInputMock.mockImplementation((name: string) => inputMap[name])
+
+    await run()
+
+    expect(mockFs.readFile).toHaveBeenCalledWith('.schema.yaml', 'utf8')
   })
 })
