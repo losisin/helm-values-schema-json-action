@@ -74,7 +74,8 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('working-directory')
     expect(execMock).toHaveBeenCalledTimes(1)
     expect(gitMock.status).toHaveBeenCalledTimes(1)
-    expect(infoMock).toHaveBeenCalledWith('Changing working directory to: test/path')
+    expect(infoMock).toHaveBeenCalledWith('Setting working directory to: test/path')
+    expect(infoMock).toHaveBeenCalledWith('No .schema.yaml found or unable to parse it')
     expect(mockChdir).toHaveBeenCalledWith('test/path')
   })
 

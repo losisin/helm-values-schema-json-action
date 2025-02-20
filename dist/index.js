@@ -34642,7 +34642,7 @@ async function run() {
     try {
         const workingDirectory = core.getInput('working-directory');
         if (workingDirectory) {
-            core.info(`Changing working directory to: ${workingDirectory}`);
+            core.info(`Setting working directory to: ${workingDirectory}`);
             process.chdir(workingDirectory);
         }
         let configFile = {};

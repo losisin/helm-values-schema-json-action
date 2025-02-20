@@ -30,7 +30,7 @@ export async function run(): Promise<void> {
   try {
     const workingDirectory = core.getInput('working-directory')
     if (workingDirectory) {
-      core.info(`Changing working directory to: ${workingDirectory}`)
+      core.info(`Setting working directory to: ${workingDirectory}`)
       process.chdir(workingDirectory)
     }
 
@@ -49,8 +49,7 @@ export async function run(): Promise<void> {
     const id = core.getInput('id') || configFile.schemaRoot?.id
     const title = core.getInput('title') || configFile.schemaRoot?.title
     const description = core.getInput('description') || configFile.schemaRoot?.description
-    const additionalProperties =
-      core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString()
+    const additionalProperties = core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString()
     const gitPush = core.getInput('git-push')
     const gitPushUserName = core.getInput('git-push-user-name')
     const gitPushUserEmail = core.getInput('git-push-user-email')

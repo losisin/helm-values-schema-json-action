@@ -35,7 +35,7 @@ jobs:
 
 | Name | Description | Default | Required |
 |------|-------------|---------|----------|
-| `input` | Input value file. Can be single or comma-separated list of yaml files | `values.yaml` | false |
+| `input` | Single or comma-separated list of yaml files provided as input or in `.schema.yaml`. Otherwise, the action will fail. | `''` | false |
 | `draft` | Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020 | `2020` | false |
 | `output` | Output filename with path to store the generated schema | `values.schema.json` | false |
 | `indent` | Indentation spaces (even number) | `4` | false |
@@ -48,6 +48,7 @@ jobs:
 | `git-push-user-email` | If empty the no-reply email of the GitHub Actions bot will be used | `github-actions[bot]@users.noreply.github.com` | false |
 | `git-commit-message` | Commit message | `update values.schema.json` | false |
 | `fail-on-diff` | Fail the job if there is any diff found between the generated output and existing file | `false` | false |
+| `working-directory` | Working directory where the schema command should run. Useful when using configuration file `.schema.yaml`. | `'.'` | false |
 
 ## Outputs
 
