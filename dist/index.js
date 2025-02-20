@@ -34693,12 +34693,12 @@ async function run() {
         await exec.exec('schema', args);
         const git = (0, simple_git_1.simpleGit)();
         const statusSummary = await git.status();
-        const outputStatus = statusSummary.files.find(file => file.path === workingDirectory + '/' + output);
+        const outputStatus = statusSummary.files.find(file => file.path.endsWith(output));
         if (outputStatus) {
             switch (true) {
                 case failOnDiff === 'true':
                     try {
-                        const diff = await git.diff(['--', workingDirectory + '/' + output]);
+                        const diff = await git.diff(['--', output]);
                         core.info(`Diff for '${output}':\n${diff}`);
                     }
                     catch {
