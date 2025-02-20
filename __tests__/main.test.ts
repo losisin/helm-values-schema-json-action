@@ -25,6 +25,7 @@ describe('run function', () => {
   let installPluginMock: jest.MockedFunction<typeof installPlugin>
   let setOutputMock: jest.SpyInstance
   let infoMock: jest.SpyInstance
+  let mockChdir: jest.SpyInstance
 
   beforeEach(() => {
     jest.restoreAllMocks()
@@ -32,6 +33,7 @@ describe('run function', () => {
     getInputMock = jest.spyOn(core, 'getInput')
     setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
     infoMock = jest.spyOn(core, 'info').mockImplementation()
+    mockChdir = jest.spyOn(process, 'chdir').mockImplementation()
     setFailedMock = jest.spyOn(core, 'setFailed')
     execMock = jest.spyOn(exec, 'exec').mockImplementation()
     simpleGitMock = simpleGit as unknown as jest.MockedFunction<typeof simpleGit>
@@ -40,13 +42,16 @@ describe('run function', () => {
 
   it('should handle success scenario', async () => {
     installPluginMock.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      output: 'output',
+      input: 'input',
+      draft: 'draft',
+      indent: 'indent',
+      'working-directory': 'test/path'
+    }
+
     getInputMock.mockImplementation((inputName: string) => {
-      switch (inputName) {
-        case 'input':
-          return 'some-input-value'
-        case 'output':
-          return 'some-output-value'
-      }
+      return inputMap[inputName]
     })
 
     const gitMock: jest.Mocked<SimpleGit> = {
@@ -65,19 +70,22 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('working-directory')
     expect(execMock).toHaveBeenCalledTimes(1)
     expect(gitMock.status).toHaveBeenCalledTimes(1)
+    expect(infoMock).toHaveBeenCalledWith('Changing working directory to: test/path')
+    expect(mockChdir).toHaveBeenCalledWith('test/path')
   })
 
   it("should handle fail-on-diff === 'true'", async () => {
     installPluginMock.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      output: 'output',
+      input: 'input',
+      draft: 'draft',
+      indent: 'indent',
+      'fail-on-diff': 'true'
+    }
+
     getInputMock.mockImplementation((inputName: string) => {
-      switch (inputName) {
-        case 'input':
-          return 'input'
-        case 'output':
-          return 'output'
-        case 'fail-on-diff':
-          return 'true'
-      }
+      return inputMap[inputName]
     })
 
     const gitMock: jest.Mocked<SimpleGit> = {
@@ -95,17 +103,18 @@ describe('run function', () => {
     expect(setFailedMock).toHaveBeenCalledWith("'output' has changed")
   })
 
-  it("should handle fail-on-diff === 'true'", async () => {
+  it("should handle fail-on-diff === 'true' when diff fails", async () => {
     installPluginMock.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      output: 'output',
+      input: 'input',
+      draft: 'draft',
+      indent: 'indent',
+      'fail-on-diff': 'true'
+    }
+
     getInputMock.mockImplementation((inputName: string) => {
-      switch (inputName) {
-        case 'input':
-          return 'input'
-        case 'output':
-          return 'output'
-        case 'fail-on-diff':
-          return 'true'
-      }
+      return inputMap[inputName]
     })
 
     const gitMock: jest.Mocked<SimpleGit> = {
@@ -119,6 +128,12 @@ describe('run function', () => {
 
     await run()
 
+    expect(getInputMock).toHaveBeenCalledWith('input')
+    expect(getInputMock).toHaveBeenCalledWith('output')
+    expect(getInputMock).toHaveBeenCalledWith('draft')
+    expect(getInputMock).toHaveBeenCalledWith('indent')
+    expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
+    expect(getInputMock).toHaveBeenCalledWith('working-directory')
     expect(gitMock.diff).toHaveBeenCalledWith(['--', 'output'])
     expect(infoMock).toHaveBeenCalledWith("Unable to get diff for 'output'")
     expect(setFailedMock).toHaveBeenCalledWith("'output' has changed")
@@ -220,15 +235,6 @@ describe('run function', () => {
 
     await run()
 
-    expect(installPluginMock).toHaveBeenCalledTimes(1)
-    expect(getInputMock).toHaveBeenCalledWith('input')
-    expect(getInputMock).toHaveBeenCalledWith('output')
-    expect(getInputMock).toHaveBeenCalledWith('draft')
-    expect(getInputMock).toHaveBeenCalledWith('indent')
-    expect(getInputMock).toHaveBeenCalledWith('git-push')
-    expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
-    expect(execMock).toHaveBeenCalledTimes(1)
-    expect(gitMock.status).toHaveBeenCalledTimes(1)
     expect(infoMock).toHaveBeenLastCalledWith("'output' has changed, but no action was requested.")
   })
 })
