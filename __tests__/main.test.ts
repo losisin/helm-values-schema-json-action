@@ -246,13 +246,13 @@ describe('run function', () => {
     mockFs.readFile.mockResolvedValue('title: My Schema\ndescription: Test schema')
     installPluginMock.mockResolvedValue('/mocked/path')
     const inputMap: { [key: string]: string } = {
-      output: 'output',
-      input: 'input'
+      'working-directory': 'test/path'
     }
     getInputMock.mockImplementation((name: string) => inputMap[name])
 
     await run()
 
+    expect(execMock).toHaveBeenCalledTimes(1)
     expect(mockFs.readFile).toHaveBeenCalledWith('.schema.yaml', 'utf8')
   })
 })
