@@ -45,7 +45,7 @@ export async function run(): Promise<void> {
 
     const input = core.getInput('input') || (configFile.input || []).join(',')
     const draft = core.getInput('draft') || configFile.draft?.toString()
-    const output = core.getInput('output') || configFile.output
+    const output = core.getInput('output') || configFile.output || 'values.schema.json'
     const indent = core.getInput('indent') || configFile.indent?.toString()
     const id = core.getInput('id') || configFile.schemaRoot?.id
     const title = core.getInput('title') || configFile.schemaRoot?.title

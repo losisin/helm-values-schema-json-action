@@ -34654,9 +34654,9 @@ async function run() {
             core.info('No .schema.yaml found or unable to parse it');
         }
         const input = core.getInput('input') || (configFile.input || []).join(',');
-        const draft = core.getInput('draft') || configFile.draft?.toString() || '2020';
+        const draft = core.getInput('draft') || configFile.draft?.toString();
         const output = core.getInput('output') || configFile.output || 'values.schema.json';
-        const indent = core.getInput('indent') || configFile.indent?.toString() || '4';
+        const indent = core.getInput('indent') || configFile.indent?.toString();
         const id = core.getInput('id') || configFile.schemaRoot?.id;
         const title = core.getInput('title') || configFile.schemaRoot?.title;
         const description = core.getInput('description') || configFile.schemaRoot?.description;
@@ -34665,7 +34665,7 @@ async function run() {
         const gitPushUserName = core.getInput('git-push-user-name');
         const gitPushUserEmail = core.getInput('git-push-user-email');
         const gitCommitMessage = core.getInput('git-commit-message');
-        const failOnDiff = core.getInput('fail-on-diff') || 'true';
+        const failOnDiff = core.getInput('fail-on-diff');
         core.startGroup(`Downloading JSON schema ${version}`);
         const cachedPath = await (0, install_1.installPlugin)(version);
         core.endGroup();
