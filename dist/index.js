@@ -34640,7 +34640,7 @@ const version = 'v1.6.4';
  */
 async function run() {
     try {
-        const workingDirectory = core.getInput('working-directory') || '__tests__/fixtures';
+        const workingDirectory = core.getInput('working-directory');
         if (workingDirectory) {
             core.info(`Changing working directory to: ${workingDirectory}`);
             process.chdir(workingDirectory);

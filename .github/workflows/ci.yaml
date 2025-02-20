@@ -73,6 +73,7 @@ jobs:
         uses: ./
         with:
           working-directory: __tests__/fixtures
+          fail-on-diff: true
 
       - name: Print Output
         id: output
