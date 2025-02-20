@@ -34640,7 +34640,7 @@ const version = 'v1.6.4';
  */
 async function run() {
     try {
-        const workingDirectory = core.getInput('working-directory');
+        const workingDirectory = core.getInput('working-directory') || '__tests__/fixtures';
         if (workingDirectory) {
             core.info(`Changing working directory to: ${workingDirectory}`);
             process.chdir(workingDirectory);
@@ -34655,7 +34655,7 @@ async function run() {
         }
         const input = core.getInput('input') || (configFile.input || []).join(',');
         const draft = core.getInput('draft') || configFile.draft?.toString();
-        const output = core.getInput('output') || configFile.output || 'values.schema.json';
+        const output = core.getInput('output') || configFile.output;
         const indent = core.getInput('indent') || configFile.indent?.toString();
         const id = core.getInput('id') || configFile.schemaRoot?.id;
         const title = core.getInput('title') || configFile.schemaRoot?.title;
@@ -34665,7 +34665,7 @@ async function run() {
         const gitPushUserName = core.getInput('git-push-user-name');
         const gitPushUserEmail = core.getInput('git-push-user-email');
         const gitCommitMessage = core.getInput('git-commit-message');
-        const failOnDiff = core.getInput('fail-on-diff');
+        const failOnDiff = core.getInput('fail-on-diff') || 'true';
         core.startGroup(`Downloading JSON schema ${version}`);
         const cachedPath = await (0, install_1.installPlugin)(version);
         core.endGroup();
@@ -34674,6 +34674,7 @@ async function run() {
         }
         core.info(`JSON schema binary '${version}' has been cached at ${cachedPath}`);
         core.setOutput('plugin-path', cachedPath);
+        core.info(`output: ${workingDirectory}/${output}`);
         const args = [];
         const options = {
             '-input': input,
@@ -34700,6 +34701,8 @@ async function run() {
                     try {
                         const diff = await git.diff(['--', output]);
                         core.info(`Diff for '${output}':\n${diff}`);
+                        core.info(`outputStatus: ${outputStatus}`);
+                        core.info(`output: ${output}`);
                     }
                     catch {
                         core.info(`Unable to get diff for '${output}'`);

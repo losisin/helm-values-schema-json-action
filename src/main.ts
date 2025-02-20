@@ -45,7 +45,7 @@ export async function run(): Promise<void> {
 
     const input = core.getInput('input') || (configFile.input || []).join(',')
     const draft = core.getInput('draft') || configFile.draft?.toString()
-    const output = core.getInput('output') || configFile.output || 'values.schema.json'
+    const output = core.getInput('output') || configFile.output
     const indent = core.getInput('indent') || configFile.indent?.toString()
     const id = core.getInput('id') || configFile.schemaRoot?.id
     const title = core.getInput('title') || configFile.schemaRoot?.title
@@ -98,7 +98,7 @@ export async function run(): Promise<void> {
       switch (true) {
         case failOnDiff === 'true':
           try {
-            const diff = await git.diff(['--', output])
+            const diff = await git.diff(['--', output!])
             core.info(`Diff for '${output}':\n${diff}`)
           } catch {
             core.info(`Unable to get diff for '${output}'`)
@@ -108,7 +108,7 @@ export async function run(): Promise<void> {
         case gitPush === 'true':
           await git.addConfig('user.name', gitPushUserName)
           await git.addConfig('user.email', gitPushUserEmail)
-          await git.add([output])
+          await git.add([output!])
           await git.commit(gitCommitMessage)
           await git.push()
           core.info(`Pushed '${output}' to the branch.`)

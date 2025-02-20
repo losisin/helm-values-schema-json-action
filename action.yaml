@@ -49,7 +49,6 @@ inputs:
   working-directory:
     description: 'Working directory where the schema command should run'
     required: false
-    default: '.'
 outputs:
    plugin-path:
       description: 'Path to the cached JSON schema binary'

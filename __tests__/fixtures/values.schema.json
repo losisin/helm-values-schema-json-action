@@ -1,7 +1,7 @@
 {
     "$id": "https://example.com/schema",
     "$ref": "schema/product.json",
-    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "additionalProperties": true,
     "description": "Schema for Helm values",
     "properties": {
@@ -90,66 +90,11 @@
             "properties": {},
             "type": "object"
         },
-        "provider": {
-            "properties": {
-                "webhook": {
-                    "properties": {
-                        "limits": {
-                            "properties": {
-                                "cpu": {
-                                    "type": "string"
-                                },
-                                "memory": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "requests": {
-                            "properties": {
-                                "cpu": {
-                                    "type": "string"
-                                },
-                                "memory": {
-                                    "type": "string"
-                                }
-                            },
-                            "type": "object"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
-            "type": "object"
-        },
         "replicaCount": {
             "type": "integer"
         },
         "resources": {
-            "properties": {
-                "limits": {
-                    "properties": {
-                        "cpu": {
-                            "type": "string"
-                        },
-                        "memory": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                },
-                "requests": {
-                    "properties": {
-                        "cpu": {
-                            "type": "string"
-                        },
-                        "memory": {
-                            "type": "string"
-                        }
-                    },
-                    "type": "object"
-                }
-            },
+            "properties": {},
             "type": "object"
         },
         "securityContext": {
