@@ -97,7 +97,7 @@ export async function run(): Promise<void> {
       switch (true) {
         case failOnDiff === 'true':
           try {
-            const diff = await git.diff(['--', output!])
+            const diff = await git.diff(['--', output])
             core.info(`Diff for '${output}':\n${diff}`)
           } catch {
             core.info(`Unable to get diff for '${output}'`)
@@ -107,7 +107,7 @@ export async function run(): Promise<void> {
         case gitPush === 'true':
           await git.addConfig('user.name', gitPushUserName)
           await git.addConfig('user.email', gitPushUserEmail)
-          await git.add([output!])
+          await git.add([output])
           await git.commit(gitCommitMessage)
           await git.push()
           core.info(`Pushed '${output}' to the branch.`)
