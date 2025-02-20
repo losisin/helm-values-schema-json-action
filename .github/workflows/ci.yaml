@@ -61,11 +61,18 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: Test Local Action
+      - name: Test 1
         id: test-action
         uses: ./
         with:
           input: __tests__/fixtures/values.yaml
+
+      - name: Test 2
+        continue-on-error: true
+        id: test-action
+        uses: ./
+        with:
+          working-directory: __tests__/fixtures
 
       - name: Print Output
         id: output
