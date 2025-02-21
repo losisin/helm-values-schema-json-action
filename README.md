@@ -173,7 +173,7 @@ jobs:
           draft: 7
 ```
 
-### Generate schema from configuration file
+### Generate from `.schema.yaml` configuration file
 
 ```yaml
 name: Generate values schema json
