@@ -6,7 +6,7 @@ import { simpleGit } from 'simple-git'
 import { parse } from 'yaml'
 import * as fs from 'fs/promises'
 
-const version = 'v1.6.4'
+const version = 'v1.7.0'
 
 interface SchemaConfig {
   input?: string[]
