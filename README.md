@@ -173,6 +173,25 @@ jobs:
           draft: 7
 ```
 
+### Generate schema from configuration file
+
+```yaml
+name: Generate values schema json
+on:
+  - pull_request
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+      - name: Generate values schema json
+        uses: losisin/helm-values-schema-json-action@v1
+        with:
+          working-directory: path/to/helm/chart
+```
+
 ## Issues, Features, Feedback
 
 Your input matters. Feel free to open [issues](https://github.com/losisin/helm-values-schema-json-action/issues) for bugs, feature requests, or any feedback you may have. Check if a similar issue exists before creating a new one, and please use clear titles and explanations to help understand your point better. Your thoughts help me improve this project!
