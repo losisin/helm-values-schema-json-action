@@ -3,8 +3,24 @@ import { installPlugin } from './install'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { simpleGit } from 'simple-git'
+import { parse } from 'yaml'
+import * as fs from 'fs/promises'
 
 const version = 'v1.6.4'
+
+interface SchemaConfig {
+  input?: string[]
+  draft?: number
+  indent?: number
+  output?: string
+  schemaRoot?: {
+    id?: string
+    ref?: string
+    title?: string
+    description?: string
+    additionalProperties?: boolean
+  }
+}
 
 /**
  * The main function for the action.
@@ -12,14 +28,28 @@ const version = 'v1.6.4'
  */
 export async function run(): Promise<void> {
   try {
-    const input = core.getInput('input')
-    const draft = core.getInput('draft')
-    const output = core.getInput('output')
-    const indent = core.getInput('indent')
-    const id = core.getInput('id')
-    const title = core.getInput('title')
-    const description = core.getInput('description')
-    const additionalProperties = core.getInput('additionalProperties')
+    const workingDirectory = core.getInput('working-directory')
+    if (workingDirectory) {
+      core.info(`Setting working directory to: ${workingDirectory}`)
+      process.chdir(workingDirectory)
+    }
+
+    let configFile: SchemaConfig = {}
+    try {
+      const fileContents = await fs.readFile('.schema.yaml', 'utf8')
+      configFile = parse(fileContents) as SchemaConfig
+    } catch {
+      core.info('No .schema.yaml found or unable to parse it')
+    }
+
+    const input = core.getInput('input') || (configFile.input || []).join(',')
+    const draft = core.getInput('draft') || configFile.draft?.toString() || '2020'
+    const output = core.getInput('output') || configFile.output || 'values.schema.json'
+    const indent = core.getInput('indent') || configFile.indent?.toString() || '4'
+    const id = core.getInput('id') || configFile.schemaRoot?.id
+    const title = core.getInput('title') || configFile.schemaRoot?.title
+    const description = core.getInput('description') || configFile.schemaRoot?.description
+    const additionalProperties = core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString()
     const gitPush = core.getInput('git-push')
     const gitPushUserName = core.getInput('git-push-user-name')
     const gitPushUserEmail = core.getInput('git-push-user-email')
@@ -34,36 +64,26 @@ export async function run(): Promise<void> {
       core.addPath(path.dirname(cachedPath))
     }
 
-    core.info(
-      `JSON schema binary '${version}' has been cached at ${cachedPath}`
-    )
+    core.info(`JSON schema binary '${version}' has been cached at ${cachedPath}`)
     core.setOutput('plugin-path', cachedPath)
 
-    const args = [
-      '-input',
-      input,
-      '-output',
-      output,
-      '-draft',
-      draft,
-      '-indent',
-      indent
-    ]
+    const args: string[] = []
 
-    if (id) {
-      args.push('-schemaRoot.id', id)
+    const options = {
+      '-input': input,
+      '-output': output,
+      '-draft': draft,
+      '-indent': indent,
+      '-schemaRoot.id': id,
+      '-schemaRoot.title': title,
+      '-schemaRoot.description': description,
+      '-schemaRoot.additionalProperties': additionalProperties
     }
 
-    if (title) {
-      args.push('-schemaRoot.title', title)
-    }
-
-    if (description) {
-      args.push('-schemaRoot.description', description)
-    }
-
-    if (additionalProperties) {
-      args.push('-schemaRoot.additionalProperties', additionalProperties)
+    for (const [key, value] of Object.entries(options)) {
+      if (value !== undefined) {
+        args.push(key, value)
+      }
     }
 
     await exec.exec('schema', args)
@@ -71,7 +91,7 @@ export async function run(): Promise<void> {
     const git = simpleGit()
     const statusSummary = await git.status()
 
-    const outputStatus = statusSummary.files.find(file => file.path === output)
+    const outputStatus = statusSummary.files.find(file => file.path.endsWith(output))
     if (outputStatus) {
       switch (true) {
         case failOnDiff === 'true':

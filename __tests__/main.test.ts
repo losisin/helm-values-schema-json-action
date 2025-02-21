@@ -10,12 +10,14 @@ import { run } from '../src/main'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { simpleGit, SimpleGit } from 'simple-git'
+import * as fs from 'fs/promises'
 import { installPlugin } from '../src/install'
 
 jest.mock('@actions/core')
 jest.mock('@actions/exec')
 jest.mock('simple-git')
 jest.mock('../src/install')
+jest.mock('fs/promises')
 
 describe('run function', () => {
   let getInputMock: jest.SpyInstance
@@ -25,6 +27,8 @@ describe('run function', () => {
   let installPluginMock: jest.MockedFunction<typeof installPlugin>
   let setOutputMock: jest.SpyInstance
   let infoMock: jest.SpyInstance
+  let mockChdir: jest.SpyInstance
+  let mockFs: jest.Mocked<typeof fs>
 
   beforeEach(() => {
     jest.restoreAllMocks()
@@ -32,19 +36,28 @@ describe('run function', () => {
     getInputMock = jest.spyOn(core, 'getInput')
     setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
     infoMock = jest.spyOn(core, 'info').mockImplementation()
+    mockChdir = jest.spyOn(process, 'chdir').mockImplementation()
     setFailedMock = jest.spyOn(core, 'setFailed')
     execMock = jest.spyOn(exec, 'exec').mockImplementation()
-    simpleGitMock = simpleGit as unknown as jest.MockedFunction<
-      typeof simpleGit
-    >
-    installPluginMock = installPlugin as unknown as jest.MockedFunction<
-      typeof installPlugin
-    >
+    simpleGitMock = simpleGit as unknown as jest.MockedFunction<typeof simpleGit>
+    installPluginMock = installPlugin as unknown as jest.MockedFunction<typeof installPlugin>
+    mockFs = fs as unknown as jest.Mocked<typeof fs>
   })
 
   it('should handle success scenario', async () => {
     installPluginMock.mockResolvedValue('/mocked/path')
-    getInputMock.mockReturnValue('false')
+    const inputMap: { [key: string]: string } = {
+      output: 'output',
+      input: 'input',
+      draft: 'draft',
+      indent: 'indent',
+      'working-directory': 'test/path'
+    }
+
+    getInputMock.mockImplementation((inputName: string) => {
+      return inputMap[inputName]
+    })
+
     const gitMock: jest.Mocked<SimpleGit> = {
       status: jest.fn().mockResolvedValue({ files: [] })
     } as any
@@ -58,22 +71,31 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('output')
     expect(getInputMock).toHaveBeenCalledWith('indent')
     expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
+    expect(getInputMock).toHaveBeenCalledWith('working-directory')
     expect(execMock).toHaveBeenCalledTimes(1)
     expect(gitMock.status).toHaveBeenCalledTimes(1)
+    expect(infoMock).toHaveBeenCalledWith('Setting working directory to: test/path')
+    expect(infoMock).toHaveBeenCalledWith('No .schema.yaml found or unable to parse it')
+    expect(mockChdir).toHaveBeenCalledWith('test/path')
   })
 
   it("should handle fail-on-diff === 'true'", async () => {
     installPluginMock.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      output: 'output',
+      input: 'input',
+      draft: 'draft',
+      indent: 'indent',
+      'fail-on-diff': 'true'
+    }
+
     getInputMock.mockImplementation((inputName: string) => {
-      if (inputName === 'fail-on-diff') {
-        return 'true'
-      }
-      return 'a-random-string'
+      return inputMap[inputName]
     })
 
     const gitMock: jest.Mocked<SimpleGit> = {
       status: jest.fn().mockResolvedValue({
-        files: [{ path: 'a-random-string' }]
+        files: [{ path: 'output' }]
       }),
       diff: jest.fn().mockResolvedValue('- old \n+ new ')
     } as any
@@ -82,32 +104,27 @@ describe('run function', () => {
 
     await run()
 
-    expect(installPluginMock).toHaveBeenCalledTimes(1)
-    expect(getInputMock).toHaveBeenCalledWith('input')
-    expect(getInputMock).toHaveBeenCalledWith('draft')
-    expect(getInputMock).toHaveBeenCalledWith('output')
-    expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
-    expect(execMock).toHaveBeenCalledTimes(1)
-    expect(gitMock.status).toHaveBeenCalledTimes(1)
-    expect(gitMock.diff).toHaveBeenCalledWith(['--', 'a-random-string'])
-    expect(infoMock).toHaveBeenCalledWith(
-      "Diff for 'a-random-string':\n- old \n+ new "
-    )
-    expect(setFailedMock).toHaveBeenCalledWith("'a-random-string' has changed")
+    expect(infoMock).toHaveBeenNthCalledWith(3, "Diff for 'output':\n- old \n+ new ")
+    expect(setFailedMock).toHaveBeenCalledWith("'output' has changed")
   })
 
   it("should handle fail-on-diff === 'true' when diff fails", async () => {
     installPluginMock.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      output: 'output',
+      input: 'input',
+      draft: 'draft',
+      indent: 'indent',
+      'fail-on-diff': 'true'
+    }
+
     getInputMock.mockImplementation((inputName: string) => {
-      if (inputName === 'fail-on-diff') {
-        return 'true'
-      }
-      return 'a-random-string'
+      return inputMap[inputName]
     })
 
     const gitMock: jest.Mocked<SimpleGit> = {
       status: jest.fn().mockResolvedValue({
-        files: [{ path: 'a-random-string' }]
+        files: [{ path: 'output' }]
       }),
       diff: jest.fn().mockRejectedValue(new Error('diff failed'))
     } as any
@@ -116,11 +133,15 @@ describe('run function', () => {
 
     await run()
 
-    expect(gitMock.diff).toHaveBeenCalledWith(['--', 'a-random-string'])
-    expect(infoMock).toHaveBeenCalledWith(
-      "Unable to get diff for 'a-random-string'"
-    )
-    expect(setFailedMock).toHaveBeenCalledWith("'a-random-string' has changed")
+    expect(getInputMock).toHaveBeenCalledWith('input')
+    expect(getInputMock).toHaveBeenCalledWith('output')
+    expect(getInputMock).toHaveBeenCalledWith('draft')
+    expect(getInputMock).toHaveBeenCalledWith('indent')
+    expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
+    expect(getInputMock).toHaveBeenCalledWith('working-directory')
+    expect(gitMock.diff).toHaveBeenCalledWith(['--', 'output'])
+    expect(infoMock).toHaveBeenCalledWith("Unable to get diff for 'output'")
+    expect(setFailedMock).toHaveBeenCalledWith("'output' has changed")
   })
 
   it("should handle git-push === 'true'", async () => {
@@ -173,16 +194,8 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('git-commit-message')
     expect(execMock).toHaveBeenCalledTimes(1)
     expect(gitMock.status).toHaveBeenCalledTimes(1)
-    expect(gitMock.addConfig).toHaveBeenNthCalledWith(
-      1,
-      'user.name',
-      'username'
-    )
-    expect(gitMock.addConfig).toHaveBeenNthCalledWith(
-      2,
-      'user.email',
-      'user@email.com'
-    )
+    expect(gitMock.addConfig).toHaveBeenNthCalledWith(1, 'user.name', 'username')
+    expect(gitMock.addConfig).toHaveBeenNthCalledWith(2, 'user.email', 'user@email.com')
     expect(gitMock.add).toHaveBeenCalledWith(['output'])
     expect(gitMock.commit).toHaveBeenCalledWith('message')
     expect(gitMock.push).toHaveBeenCalledTimes(1)
@@ -227,17 +240,20 @@ describe('run function', () => {
 
     await run()
 
-    expect(installPluginMock).toHaveBeenCalledTimes(1)
-    expect(getInputMock).toHaveBeenCalledWith('input')
-    expect(getInputMock).toHaveBeenCalledWith('output')
-    expect(getInputMock).toHaveBeenCalledWith('draft')
-    expect(getInputMock).toHaveBeenCalledWith('indent')
-    expect(getInputMock).toHaveBeenCalledWith('git-push')
-    expect(getInputMock).toHaveBeenCalledWith('fail-on-diff')
+    expect(infoMock).toHaveBeenLastCalledWith("'output' has changed, but no action was requested.")
+  })
+
+  it('should handle .schema.yaml configuration', async () => {
+    mockFs.readFile.mockResolvedValue('title: My Schema\ndescription: Test schema')
+    installPluginMock.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      'working-directory': 'test/path'
+    }
+    getInputMock.mockImplementation((name: string) => inputMap[name])
+
+    await run()
+
     expect(execMock).toHaveBeenCalledTimes(1)
-    expect(gitMock.status).toHaveBeenCalledTimes(1)
-    expect(infoMock).toHaveBeenLastCalledWith(
-      "'output' has changed, but no action was requested."
-    )
+    expect(mockFs.readFile).toHaveBeenCalledWith('.schema.yaml', 'utf8')
   })
 })

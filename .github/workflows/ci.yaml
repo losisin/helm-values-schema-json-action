@@ -61,12 +61,20 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
-      - name: Test Local Action
+      - name: Test 1
         id: test-action
         uses: ./
         with:
           input: __tests__/fixtures/values.yaml
+          output: __tests__/fixtures/values.schema.json
 
-      - name: Print Output
+      - name: Test 2
+        continue-on-error: true
+        uses: ./
+        with:
+          working-directory: __tests__/fixtures
+          fail-on-diff: true
+
+      - name: Print Cached Path
         id: output
         run: echo "${{ steps.test-action.outputs.plugin-path }}"

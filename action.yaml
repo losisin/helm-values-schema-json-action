@@ -4,19 +4,16 @@ description: A GitHub action for generating json schema from multiple values fil
 inputs:
   input:
     description: Input value file. Can be single or comma-separated list of yaml files
-    required: true
+    required: false
   draft:
     description: Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020
     required: false
-    default: 2020
   indent:
     description: Indentation spaces (even number)
     required: false
-    default: 4
   output:
     description: Output file name with path to store the generated schema
     required: false
-    default: values.schema.json
   id:
     description: ID of the schema
     required: false
@@ -49,6 +46,9 @@ inputs:
     description: Fail the job if there is any diff found between the generated output and existing file
     required: false
     default: 'false'
+  working-directory:
+    description: 'Working directory where the schema command should run'
+    required: false
 outputs:
    plugin-path:
       description: 'Path to the cached JSON schema binary'

@@ -115,11 +115,7 @@ describe('installPlugin', () => {
     expect(tc.downloadTool).toHaveBeenCalledWith(getPlugin(version))
     expect(fs.chmodSync).toHaveBeenCalledWith('/downloads/tool.tgz', '777')
     expect(tc.extractTar).toHaveBeenCalledWith('/downloads/tool.tgz')
-    expect(tc.cacheDir).toHaveBeenCalledWith(
-      '/extracts/tool',
-      pluginName,
-      version
-    )
+    expect(tc.cacheDir).toHaveBeenCalledWith('/extracts/tool', pluginName, version)
   })
 
   it('finds schema plugin from the cache if it is already cached', async () => {
@@ -156,12 +152,8 @@ describe('findPlugin', () => {
     ;(fs.readdirSync as jest.Mock).mockReturnValue([directoryName])
     ;(fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => true })
 
-    expect(() => findPlugin(pluginFolder)).toThrow(
-      `JSON schema executable not found in path: ${pluginFolder}`
-    )
-    expect(fs.statSync).toHaveBeenCalledWith(
-      path.join(pluginFolder, directoryName)
-    )
+    expect(() => findPlugin(pluginFolder)).toThrow(`JSON schema executable not found in path: ${pluginFolder}`)
+    expect(fs.statSync).toHaveBeenCalledWith(path.join(pluginFolder, directoryName))
     expect(fs.statSync).toHaveBeenCalledTimes(1)
   })
 
@@ -170,8 +162,6 @@ describe('findPlugin', () => {
     ;(fs.readdirSync as jest.Mock).mockReturnValue(['notSchema'])
     ;(fs.statSync as jest.Mock).mockReturnValue({ isDirectory: () => false })
 
-    expect(() => findPlugin('/some/dir')).toThrow(
-      'JSON schema executable not found in path: /some/dir'
-    )
+    expect(() => findPlugin('/some/dir')).toThrow('JSON schema executable not found in path: /some/dir')
   })
 })
