@@ -34545,7 +34545,7 @@ const fs = __importStar(__nccwpck_require__(9896));
 const tc = __importStar(__nccwpck_require__(3472));
 const pluginName = 'schema';
 const pluginRepository = 'helm-values-schema-json';
-const version = 'v1.8.0';
+const version = 'v1.9.0';
 function getPlugin(pluginVersion) {
     const osArch = os.arch();
     const osType = os.type();
@@ -34633,7 +34633,7 @@ const exec = __importStar(__nccwpck_require__(5236));
 const simple_git_1 = __nccwpck_require__(9065);
 const yaml_1 = __nccwpck_require__(8815);
 const fs = __importStar(__nccwpck_require__(1943));
-const version = 'v1.8.0';
+const version = 'v1.9.0';
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -34666,6 +34666,11 @@ async function run() {
         const gitPushUserEmail = core.getInput('git-push-user-email');
         const gitCommitMessage = core.getInput('git-commit-message');
         const failOnDiff = core.getInput('fail-on-diff');
+        const bundle = core.getInput('bundle') || configFile.bundle?.toString();
+        const bundleRoot = core.getInput('bundle-root') || configFile.bundleRoot;
+        const bundleWithoutID = core.getInput('bundle-without-id') || configFile.bundleWithoutID?.toString();
+        const k8sSchemaVersion = core.getInput('k8s-schema-version') || configFile.k8sSchemaVersion;
+        const k8sSchemaURL = core.getInput('k8s-schema-url') || configFile.k8sSchemaURL;
         core.startGroup(`Downloading JSON schema ${version}`);
         const cachedPath = await (0, install_1.installPlugin)(version);
         core.endGroup();
@@ -34683,7 +34688,12 @@ async function run() {
             '-schemaRoot.id': id,
             '-schemaRoot.title': title,
             '-schemaRoot.description': description,
-            '-schemaRoot.additionalProperties': additionalProperties
+            '-schemaRoot.additionalProperties': additionalProperties,
+            '-bundle': bundle,
+            '-bundleRoot': bundleRoot,
+            '-bundleWithoutID': bundleWithoutID,
+            '-k8sSchemaVersion': k8sSchemaVersion,
+            '-k8sSchemaURL': k8sSchemaURL
         };
         for (const [key, value] of Object.entries(options)) {
             if (value !== undefined) {

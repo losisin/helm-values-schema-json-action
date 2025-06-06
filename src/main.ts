@@ -6,7 +6,7 @@ import { simpleGit } from 'simple-git'
 import { parse } from 'yaml'
 import * as fs from 'fs/promises'
 
-const version = 'v1.8.0'
+const version = 'v1.9.0'
 
 interface SchemaConfig {
   input?: string[]
@@ -20,6 +20,11 @@ interface SchemaConfig {
     description?: string
     additionalProperties?: boolean
   }
+  bundle?: boolean
+  bundleRoot?: string
+  bundleWithoutID?: boolean
+  k8sSchemaVersion?: string
+  k8sSchemaURL?: string
 }
 
 /**
@@ -55,6 +60,11 @@ export async function run(): Promise<void> {
     const gitPushUserEmail = core.getInput('git-push-user-email')
     const gitCommitMessage = core.getInput('git-commit-message')
     const failOnDiff = core.getInput('fail-on-diff')
+    const bundle = core.getInput('bundle') || configFile.bundle?.toString()
+    const bundleRoot = core.getInput('bundle-root') || configFile.bundleRoot
+    const bundleWithoutID = core.getInput('bundle-without-id') || configFile.bundleWithoutID?.toString()
+    const k8sSchemaVersion = core.getInput('k8s-schema-version') || configFile.k8sSchemaVersion
+    const k8sSchemaURL = core.getInput('k8s-schema-url') || configFile.k8sSchemaURL
 
     core.startGroup(`Downloading JSON schema ${version}`)
     const cachedPath = await installPlugin(version)
@@ -77,7 +87,12 @@ export async function run(): Promise<void> {
       '-schemaRoot.id': id,
       '-schemaRoot.title': title,
       '-schemaRoot.description': description,
-      '-schemaRoot.additionalProperties': additionalProperties
+      '-schemaRoot.additionalProperties': additionalProperties,
+      '-bundle': bundle,
+      '-bundleRoot': bundleRoot,
+      '-bundleWithoutID': bundleWithoutID,
+      '-k8sSchemaVersion': k8sSchemaVersion,
+      '-k8sSchemaURL': k8sSchemaURL
     }
 
     for (const [key, value] of Object.entries(options)) {
