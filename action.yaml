@@ -29,19 +29,19 @@ inputs:
   git-push:
     description: If true it will commit and push the changes (ignored if `fail-on-diff` is set)
     required: false
-    default: 'false'
+    default: false
   git-push-user-name:
     description: If empty the name of the GitHub Actions bot will be used (i.e. `github-actions[bot]`)
     required: false
-    default: "github-actions[bot]"
+    default: 'github-actions[bot]'
   git-push-user-email:
     description: If empty the no-reply email of the GitHub Actions bot will be used (i.e. `github-actions[bot]@users.noreply.github.com`)
     required: false
-    default: "github-actions[bot]@users.noreply.github.com"
+    default: 'github-actions[bot]@users.noreply.github.com'
   git-commit-message:
     description: Commit message
     required: false
-    default: "update values.schema.json"
+    default: 'update values.schema.json'
   fail-on-diff:
     description: Fail the job if there is any diff found between the generated output and existing file
     required: false
@@ -62,14 +62,14 @@ inputs:
     required: false
     default: false
   k8s-schema-version:
-    description: Version used in the `--k8sSchemaURL` template for `$ref: $k8s/...` alias
+    description: 'Version used in the `--k8sSchemaURL` template for `$ref: $k8s/...` alias'
     required: false
     default: 'v1.33.1'
   k8s-schema-url:
-    description: URL template used in `$ref: $k8s/...` alias
+    description: 'URL template used in `$ref: $k8s/...` alias'
     required: false
     type: string
-    default: "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/{{ .K8sSchemaVersion }}/"
+    default: 'https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/{{ .K8sSchemaVersion }}/'
 outputs:
    plugin-path:
       description: 'Path to the cached JSON schema binary'
