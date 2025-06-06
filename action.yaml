@@ -68,7 +68,8 @@ inputs:
   k8s-schema-url:
     description: URL template used in `$ref: $k8s/...` alias
     required: false
-    default: 'https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/{{ .K8sSchemaVersion }}/'
+    type: string
+    default: "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/{{ .K8sSchemaVersion }}/"
 outputs:
    plugin-path:
       description: 'Path to the cached JSON schema binary'
