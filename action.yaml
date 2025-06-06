@@ -45,10 +45,30 @@ inputs:
   fail-on-diff:
     description: Fail the job if there is any diff found between the generated output and existing file
     required: false
-    default: 'false'
+    default: false
   working-directory:
     description: 'Working directory where the schema command should run'
     required: false
+  bundle:
+    description: Bundle referenced (`$ref`) subschemas into a single file inside `$defs`
+    required: false
+    default: false
+  bundle-root:
+    description: Root directory to allow local referenced files to be loaded from
+    required: false
+    default: '.'
+  bundle-without-id:
+    description: Bundle without using `$id` to reference bundled schemas
+    required: false
+    default: false
+  k8s-schema-version:
+    description: Version used in the `--k8sSchemaURL` template for `$ref: $k8s/...` alias
+    required: false
+    default: 'v1.33.1'
+  k8s-schema-url:
+    description: URL template used in `$ref: $k8s/...` alias
+    required: false
+    default: 'https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/{{ .K8sSchemaVersion }}/'
 outputs:
    plugin-path:
       description: 'Path to the cached JSON schema binary'

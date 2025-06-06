@@ -1,11 +1,16 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.com/schema",
+    "title": "Helm Values Schema",
+    "description": "Schema for Helm values",
+    "$ref": "#/$defs/subschema.schema.json_2",
+    "type": "object",
     "properties": {
         "affinity": {
-            "properties": {},
             "type": "object"
         },
         "autoscaling": {
+            "type": "object",
             "properties": {
                 "enabled": {
                     "type": "boolean"
@@ -19,15 +24,16 @@
                 "targetCPUUtilizationPercentage": {
                     "type": "integer"
                 }
-            },
-            "type": "object"
+            }
         },
         "fullnameOverride": {
             "type": "string"
         },
         "image": {
+            "type": "object",
             "properties": {
                 "pullPolicy": {
+                    "$ref": "#/$defs/subschema.schema.json/properties/pullPolicy",
                     "type": "string"
                 },
                 "repository": {
@@ -36,23 +42,24 @@
                 "tag": {
                     "type": "string"
                 }
-            },
-            "type": "object"
+            }
         },
         "imagePullSecrets": {
             "type": "array"
         },
         "ingress": {
+            "type": "object",
             "properties": {
                 "annotations": {
-                    "properties": {},
                     "type": "object"
                 },
                 "enabled": {
                     "type": "boolean"
                 },
                 "hosts": {
+                    "type": "array",
                     "items": {
+                        "type": "object",
                         "properties": {
                             "host": {
                                 "type": "string"
@@ -60,44 +67,37 @@
                             "paths": {
                                 "type": "array"
                             }
-                        },
-                        "type": "object"
-                    },
-                    "type": "array"
+                        }
+                    }
                 },
                 "tls": {
                     "type": "array"
                 }
-            },
-            "type": "object"
+            }
         },
         "nameOverride": {
             "type": "string"
         },
         "nodeSelector": {
-            "properties": {},
             "type": "object"
         },
         "podAnnotations": {
-            "properties": {},
             "type": "object"
         },
         "podSecurityContext": {
-            "properties": {},
             "type": "object"
         },
         "replicaCount": {
             "type": "integer"
         },
         "resources": {
-            "properties": {},
             "type": "object"
         },
         "securityContext": {
-            "properties": {},
             "type": "object"
         },
         "service": {
+            "type": "object",
             "properties": {
                 "port": {
                     "type": "integer"
@@ -105,13 +105,12 @@
                 "type": {
                     "type": "string"
                 }
-            },
-            "type": "object"
+            }
         },
         "serviceAccount": {
+            "type": "object",
             "properties": {
                 "annotations": {
-                    "properties": {},
                     "type": "object"
                 },
                 "create": {
@@ -120,12 +119,67 @@
                 "name": {
                     "type": "string"
                 }
-            },
-            "type": "object"
+            }
         },
         "tolerations": {
             "type": "array"
         }
     },
-    "type": "object"
+    "additionalProperties": true,
+    "$defs": {
+        "subschema.schema.json": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$comment": "Sample schema referenced by other schemas. This file is meant to be manually created and not automatically generated",
+            "type": "object",
+            "properties": {
+                "pullPolicy": {
+                    "description": "This sets the pull policy for images.",
+                    "type": "string",
+                    "enum": [
+                        "IfNotPresent",
+                        "Always",
+                        "Never"
+                    ]
+                },
+                "repository": {
+                    "type": "string"
+                },
+                "tag": {
+                    "description": "Overrides the image tag whose default is the chart appVersion.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "additionalProperties": false
+        },
+        "subschema.schema.json_2": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$comment": "Sample schema referenced by other schemas. This file is meant to be manually created and not automatically generated",
+            "type": "object",
+            "properties": {
+                "pullPolicy": {
+                    "description": "This sets the pull policy for images.",
+                    "type": "string",
+                    "enum": [
+                        "IfNotPresent",
+                        "Always",
+                        "Never"
+                    ]
+                },
+                "repository": {
+                    "type": "string"
+                },
+                "tag": {
+                    "description": "Overrides the image tag whose default is the chart appVersion.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "additionalProperties": false
+        }
+    }
 }
