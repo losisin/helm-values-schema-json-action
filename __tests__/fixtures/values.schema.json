@@ -30,19 +30,8 @@
             "type": "string"
         },
         "image": {
-            "type": "object",
-            "properties": {
-                "pullPolicy": {
-                    "$ref": "./bundle/subschema.schema.json#/properties/image/pullPolicy",
-                    "type": "string"
-                },
-                "repository": {
-                    "type": "string"
-                },
-                "tag": {
-                    "type": "string"
-                }
-            }
+            "$ref": "bundle/subschema.schema.json",
+            "type": "null"
         },
         "imagePullSecrets": {
             "type": "array"
@@ -212,8 +201,34 @@
                         "null"
                     ]
                 }
-            },
-            "additionalProperties": false
+            }
+        },
+        "subschema.schema.json_2": {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "./bundle/subschema.schema.json",
+            "$comment": "Sample schema referenced by other schemas. This file is meant to be manually created and not automatically generated",
+            "type": "object",
+            "properties": {
+                "pullPolicy": {
+                    "description": "This sets the pull policy for images.",
+                    "type": "string",
+                    "enum": [
+                        "IfNotPresent",
+                        "Always",
+                        "Never"
+                    ]
+                },
+                "repository": {
+                    "type": "string"
+                },
+                "tag": {
+                    "description": "Overrides the image tag whose default is the chart appVersion.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
         }
     }
 }

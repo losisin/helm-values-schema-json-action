@@ -4,11 +4,7 @@
 
 replicaCount: 1
 
-image:
-  repository: nginx
-  pullPolicy: IfNotPresent # @schema $ref: ./bundle/subschema.schema.json#/properties/image/pullPolicy
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+image: # @schema $ref: bundle/subschema.schema.json
 
 imagePullSecrets: []
 nameOverride: ""
