@@ -6,7 +6,7 @@ resources:
     cpu: 200m
     memory: 128Mi
 
-provider:
+provider: # @schema title: Provider
   webhook:
     requests:
       cpu: 200m

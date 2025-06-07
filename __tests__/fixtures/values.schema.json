@@ -3,7 +3,7 @@
     "$id": "https://example.com/schema",
     "title": "Helm Values Schema",
     "description": "Schema for Helm values",
-    "$ref": "#/$defs/subschema.schema.json_2",
+    "$ref": "../bundle/subschema.schema.json",
     "type": "object",
     "properties": {
         "affinity": {
@@ -30,19 +30,8 @@
             "type": "string"
         },
         "image": {
-            "type": "object",
-            "properties": {
-                "pullPolicy": {
-                    "$ref": "#/$defs/subschema.schema.json/properties/pullPolicy",
-                    "type": "string"
-                },
-                "repository": {
-                    "type": "string"
-                },
-                "tag": {
-                    "type": "string"
-                }
-            }
+            "$ref": "bundle/subschema.schema.json",
+            "type": "null"
         },
         "imagePullSecrets": {
             "type": "array"
@@ -87,11 +76,68 @@
         "podSecurityContext": {
             "type": "object"
         },
+        "provider": {
+            "title": "Provider",
+            "type": "object",
+            "properties": {
+                "webhook": {
+                    "type": "object",
+                    "properties": {
+                        "limits": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string"
+                                },
+                                "memory": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string"
+                                },
+                                "memory": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "replicaCount": {
             "type": "integer"
         },
         "resources": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "limits": {
+                    "type": "object",
+                    "properties": {
+                        "cpu": {
+                            "type": "string"
+                        },
+                        "memory": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "requests": {
+                    "type": "object",
+                    "properties": {
+                        "cpu": {
+                            "type": "string"
+                        },
+                        "memory": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         },
         "securityContext": {
             "type": "object"
@@ -129,6 +175,7 @@
     "$defs": {
         "subschema.schema.json": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "../bundle/subschema.schema.json",
             "$comment": "Sample schema referenced by other schemas. This file is meant to be manually created and not automatically generated",
             "type": "object",
             "properties": {
@@ -136,6 +183,9 @@
                     "description": "This sets the pull policy for images.",
                     "type": "string",
                     "enum": [
+                        "IfNotPresent",
+                        "Always",
+                        "Never",
                         "IfNotPresent",
                         "Always",
                         "Never"
@@ -151,11 +201,11 @@
                         "null"
                     ]
                 }
-            },
-            "additionalProperties": false
+            }
         },
         "subschema.schema.json_2": {
             "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$id": "./bundle/subschema.schema.json",
             "$comment": "Sample schema referenced by other schemas. This file is meant to be manually created and not automatically generated",
             "type": "object",
             "properties": {
@@ -178,8 +228,7 @@
                         "null"
                     ]
                 }
-            },
-            "additionalProperties": false
+            }
         }
     }
 }
