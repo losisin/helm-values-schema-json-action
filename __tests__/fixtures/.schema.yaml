@@ -1,6 +1,6 @@
 input:
-  - 'values.yaml'
-  # - 'production/values.yaml'
+  - values.yaml
+  - production/values.yaml
 
 draft: 2020
 indent: 4
@@ -14,7 +14,7 @@ schemaRoot:
   additionalProperties: true
 
 bundle: true
-bundleRoot: '.'
-bundleWithoutID: true
+bundleRoot: ''
+bundleWithoutID: false
 k8sSchemaVersion: v1.33.1
 k8sSchemaURL: https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/{{ .K8sSchemaVersion }}/
