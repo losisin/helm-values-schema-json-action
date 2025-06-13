@@ -34636,6 +34636,7 @@ async function run() {
         const title = core.getInput('title') || configFile.schemaRoot?.title;
         const description = core.getInput('description') || configFile.schemaRoot?.description;
         const additionalProperties = core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString();
+        const noAdditionalProperties = core.getInput('noAdditionalProperties') || configFile.noAdditionalProperties?.toString();
         const gitPush = core.getInput('git-push');
         const gitPushUserName = core.getInput('git-push-user-name');
         const gitPushUserEmail = core.getInput('git-push-user-email');
@@ -34664,6 +34665,7 @@ async function run() {
             '-schemaRoot.title': title,
             '-schemaRoot.description': description,
             '-schemaRoot.additionalProperties': additionalProperties,
+            '-noAdditionalProperties': noAdditionalProperties,
             '-bundle': bundle,
             '-bundleRoot': bundleRoot,
             '-bundleWithoutID': bundleWithoutID,

@@ -26,6 +26,9 @@ inputs:
   additionalProperties:
     description: Additional properties allowed in the schema
     required: false
+  noAdditionalProperties:
+    description: Additional properties allowed in the schema, including child objects
+    required: false
   git-push:
     description: If true it will commit and push the changes (ignored if `fail-on-diff` is set)
     required: false
