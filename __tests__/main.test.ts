@@ -158,7 +158,8 @@ describe('run function', () => {
       id: 'id',
       title: 'title',
       description: 'description',
-      additionalProperties: 'true'
+      additionalProperties: 'true',
+      noAdditionalProperties: 'true'
     }
 
     getInputMock.mockImplementation((inputName: string) => {
@@ -188,6 +189,7 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('title')
     expect(getInputMock).toHaveBeenCalledWith('description')
     expect(getInputMock).toHaveBeenCalledWith('additionalProperties')
+    expect(getInputMock).toHaveBeenCalledWith('noAdditionalProperties')
     expect(getInputMock).toHaveBeenCalledWith('git-push')
     expect(getInputMock).toHaveBeenCalledWith('git-push-user-name')
     expect(getInputMock).toHaveBeenCalledWith('git-push-user-email')

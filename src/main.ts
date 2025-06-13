@@ -20,6 +20,7 @@ interface SchemaConfig {
     description?: string
     additionalProperties?: boolean
   }
+  noAdditionalProperties?: boolean
   bundle?: boolean
   bundleRoot?: string
   bundleWithoutID?: boolean
@@ -55,6 +56,7 @@ export async function run(): Promise<void> {
     const title = core.getInput('title') || configFile.schemaRoot?.title
     const description = core.getInput('description') || configFile.schemaRoot?.description
     const additionalProperties = core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString()
+    const noAdditionalProperties = core.getInput('noAdditionalProperties') || configFile.noAdditionalProperties?.toString()
     const gitPush = core.getInput('git-push')
     const gitPushUserName = core.getInput('git-push-user-name')
     const gitPushUserEmail = core.getInput('git-push-user-email')
@@ -88,6 +90,7 @@ export async function run(): Promise<void> {
       '-schemaRoot.title': title,
       '-schemaRoot.description': description,
       '-schemaRoot.additionalProperties': additionalProperties,
+      '-noAdditionalProperties': noAdditionalProperties,
       '-bundle': bundle,
       '-bundleRoot': bundleRoot,
       '-bundleWithoutID': bundleWithoutID,
