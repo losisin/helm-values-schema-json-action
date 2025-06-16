@@ -34520,7 +34520,7 @@ const fs = __importStar(__nccwpck_require__(9896));
 const tc = __importStar(__nccwpck_require__(3472));
 const pluginName = 'schema';
 const pluginRepository = 'helm-values-schema-json';
-const version = 'v1.9.2';
+const version = 'v2.0.0';
 function getPlugin(pluginVersion) {
     const osArch = os.arch();
     const osType = os.type();
@@ -34608,7 +34608,7 @@ const exec = __importStar(__nccwpck_require__(5236));
 const simple_git_1 = __nccwpck_require__(9065);
 const yaml_1 = __nccwpck_require__(8815);
 const fs = __importStar(__nccwpck_require__(1943));
-const version = 'v1.9.2';
+const version = 'v2.0.0';
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -34628,11 +34628,12 @@ async function run() {
         catch {
             core.info('No .schema.yaml found or unable to parse it');
         }
-        const input = core.getInput('input') || (configFile.input || []).join(',');
+        const values = core.getInput('values') || (configFile.values || []).join(',');
         const draft = core.getInput('draft') || configFile.draft?.toString() || '2020';
         const output = core.getInput('output') || configFile.output || 'values.schema.json';
         const indent = core.getInput('indent') || configFile.indent?.toString() || '4';
         const id = core.getInput('id') || configFile.schemaRoot?.id;
+        const ref = core.getInput('ref') || configFile.schemaRoot?.ref;
         const title = core.getInput('title') || configFile.schemaRoot?.title;
         const description = core.getInput('description') || configFile.schemaRoot?.description;
         const additionalProperties = core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString();
@@ -34647,6 +34648,7 @@ async function run() {
         const bundleWithoutID = core.getInput('bundle-without-id') || configFile.bundleWithoutID?.toString();
         const k8sSchemaVersion = core.getInput('k8s-schema-version') || configFile.k8sSchemaVersion;
         const k8sSchemaURL = core.getInput('k8s-schema-url') || configFile.k8sSchemaURL;
+        const useHelmDocs = core.getInput('use-helm-docs') || configFile.useHelmDocs?.toString();
         core.startGroup(`Downloading JSON schema ${version}`);
         const cachedPath = await (0, install_1.installPlugin)(version);
         core.endGroup();
@@ -34657,20 +34659,22 @@ async function run() {
         core.setOutput('plugin-path', cachedPath);
         const args = [];
         const options = {
-            '-input': input,
-            '-output': output,
-            '-draft': draft,
-            '-indent': indent,
-            '-schemaRoot.id': id,
-            '-schemaRoot.title': title,
-            '-schemaRoot.description': description,
-            '-schemaRoot.additionalProperties': additionalProperties,
-            '-noAdditionalProperties': noAdditionalProperties,
-            '-bundle': bundle,
-            '-bundleRoot': bundleRoot,
-            '-bundleWithoutID': bundleWithoutID,
+            '--values': values,
+            '--output': output,
+            '--draft': draft,
+            '--indent': indent,
+            '--schema-root.id': id,
+            '--schema-root.ref': ref,
+            '--schema-root.title': title,
+            '--schema-root.description': description,
+            '--schema-root.additional-properties': additionalProperties,
+            '--no-additional-properties': noAdditionalProperties,
+            '--bundle': bundle,
+            '--bundle-root': bundleRoot,
+            '--k8s-schema-version': bundleWithoutID,
             '-k8sSchemaVersion': k8sSchemaVersion,
-            '-k8sSchemaURL': k8sSchemaURL
+            '--k8s-schema-url': k8sSchemaURL,
+            '--use-helm-docs': useHelmDocs
         };
         for (const [key, value] of Object.entries(options)) {
             if (value !== undefined) {

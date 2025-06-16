@@ -35,11 +35,12 @@ jobs:
 
 | Name | Description | Default | Required |
 |------|-------------|---------|----------|
-| `input` | Single or comma-separated list of yaml files provided as input or in `.schema.yaml`. Otherwise, the action will fail. | `''` | false |
+| `values` | Single or comma-separated list of yaml files provided as input or in `.schema.yaml` | `''` | false |
 | `draft` | Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020 | `2020` | false |
 | `output` | Output filename with path to store the generated schema | `values.schema.json` | false |
 | `indent` | Indentation spaces (even number) | `4` | false |
 | `id` | ID of the schema | `''` | false |
+| `ref` | URI reference of the schema. Relative to CWD when using `bundle` | `''` | false |
 | `title` | Title of the schema | `''` | false |
 | `description` | Description of the schema | `''` | false |
 | `additionalProperties` | Additional properties allowed in the schema (bool) | `''` | false |
@@ -50,6 +51,7 @@ jobs:
 | `git-commit-message` | Commit message | `update values.schema.json` | false |
 | `fail-on-diff` | Fail the job if there is any diff found between the generated output and existing file | `false` | false |
 | `working-directory` | Working directory where the schema command should run. Useful when using configuration file `.schema.yaml`. | `'.'` | false |
+| `useHelmDocs` | Read description from helm-docs comments | `false` | false |
 
 ## Outputs
 

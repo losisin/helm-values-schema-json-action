@@ -6,10 +6,10 @@ import { simpleGit } from 'simple-git'
 import { parse } from 'yaml'
 import * as fs from 'fs/promises'
 
-const version = 'v1.9.2'
+const version = 'v2.0.0'
 
 interface SchemaConfig {
-  input?: string[]
+  values?: string[]
   draft?: number
   indent?: number
   output?: string
@@ -26,6 +26,7 @@ interface SchemaConfig {
   bundleWithoutID?: boolean
   k8sSchemaVersion?: string
   k8sSchemaURL?: string
+  useHelmDocs?: boolean
 }
 
 /**
@@ -48,11 +49,12 @@ export async function run(): Promise<void> {
       core.info('No .schema.yaml found or unable to parse it')
     }
 
-    const input = core.getInput('input') || (configFile.input || []).join(',')
+    const values = core.getInput('values') || (configFile.values || []).join(',')
     const draft = core.getInput('draft') || configFile.draft?.toString() || '2020'
     const output = core.getInput('output') || configFile.output || 'values.schema.json'
     const indent = core.getInput('indent') || configFile.indent?.toString() || '4'
     const id = core.getInput('id') || configFile.schemaRoot?.id
+    const ref = core.getInput('ref') || configFile.schemaRoot?.ref
     const title = core.getInput('title') || configFile.schemaRoot?.title
     const description = core.getInput('description') || configFile.schemaRoot?.description
     const additionalProperties = core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString()
@@ -67,6 +69,7 @@ export async function run(): Promise<void> {
     const bundleWithoutID = core.getInput('bundle-without-id') || configFile.bundleWithoutID?.toString()
     const k8sSchemaVersion = core.getInput('k8s-schema-version') || configFile.k8sSchemaVersion
     const k8sSchemaURL = core.getInput('k8s-schema-url') || configFile.k8sSchemaURL
+    const useHelmDocs = core.getInput('use-helm-docs') || configFile.useHelmDocs?.toString()
 
     core.startGroup(`Downloading JSON schema ${version}`)
     const cachedPath = await installPlugin(version)
@@ -82,20 +85,22 @@ export async function run(): Promise<void> {
     const args: string[] = []
 
     const options = {
-      '-input': input,
-      '-output': output,
-      '-draft': draft,
-      '-indent': indent,
-      '-schemaRoot.id': id,
-      '-schemaRoot.title': title,
-      '-schemaRoot.description': description,
-      '-schemaRoot.additionalProperties': additionalProperties,
-      '-noAdditionalProperties': noAdditionalProperties,
-      '-bundle': bundle,
-      '-bundleRoot': bundleRoot,
-      '-bundleWithoutID': bundleWithoutID,
+      '--values': values,
+      '--output': output,
+      '--draft': draft,
+      '--indent': indent,
+      '--schema-root.id': id,
+      '--schema-root.ref': ref,
+      '--schema-root.title': title,
+      '--schema-root.description': description,
+      '--schema-root.additional-properties': additionalProperties,
+      '--no-additional-properties': noAdditionalProperties,
+      '--bundle': bundle,
+      '--bundle-root': bundleRoot,
+      '--k8s-schema-version': bundleWithoutID,
       '-k8sSchemaVersion': k8sSchemaVersion,
-      '-k8sSchemaURL': k8sSchemaURL
+      '--k8s-schema-url': k8sSchemaURL,
+      '--use-helm-docs': useHelmDocs
     }
 
     for (const [key, value] of Object.entries(options)) {
