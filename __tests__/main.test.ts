@@ -258,4 +258,31 @@ describe('run function', () => {
     expect(execMock).toHaveBeenCalledTimes(1)
     expect(mockFs.readFile).toHaveBeenCalledWith('.schema.yaml', 'utf8')
   })
+
+  it('should not add cached path to PATH when already present', async () => {
+    const originalPath = process.env.PATH
+    const cachedPath = '/mocked/path/schema'
+    const cachedPathDir = '/mocked/path'
+
+    process.env.PATH = `${cachedPathDir}:/usr/bin:/bin`
+    installPluginMock.mockResolvedValue(cachedPath)
+
+    const addPathMock = jest.spyOn(core, 'addPath')
+
+    await run()
+
+    expect(addPathMock).not.toHaveBeenCalled()
+
+    process.env.PATH = originalPath
+  })
+
+  it('should handle non-Error instance without setting failed', async () => {
+    const nonError = 'This is not an Error instance'
+
+    installPluginMock.mockRejectedValue(nonError)
+
+    await run()
+
+    expect(setFailedMock).not.toHaveBeenCalled()
+  })
 })
