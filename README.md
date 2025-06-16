@@ -25,7 +25,7 @@ jobs:
       - name: Generate values schema json
         uses: losisin/helm-values-schema-json-action@v1
         with:
-          input: values.yaml
+          values: values.yaml
 ```
 
 > [!NOTE]
@@ -79,7 +79,7 @@ jobs:
       - name: Generate values schema json
         uses: losisin/helm-values-schema-json-action@v1
         with:
-          input: values.yaml
+          values: values.yaml
           fail-on-diff: true
 ```
 
@@ -104,7 +104,7 @@ jobs:
       - name: Generate values schema json
         uses: losisin/helm-values-schema-json-action@v1
         with:
-          input: values.yaml
+          values: values.yaml
           git-push: true
 ```
 
@@ -124,7 +124,7 @@ jobs:
       - name: Generate values schema json
         uses: losisin/helm-values-schema-json-action@v1
         with:
-          input: values.yaml
+          values: values.yaml
           git-push: true
           git-push-user-name: "John Doe"
           git-push-user-email: "john.doe@example.com"
@@ -149,7 +149,7 @@ jobs:
       - name: Generate values schema json
         uses: losisin/helm-values-schema-json-action@v1
         with:
-          input: values.yaml,${GITHUB_WORKSPACE}/values2.yaml
+          values: values.yaml,${GITHUB_WORKSPACE}/values2.yaml
           output: my.output.json
           draft: 7
           indent: 2
@@ -171,7 +171,7 @@ jobs:
       - name: Generate values schema json
         uses: losisin/helm-values-schema-json-action@v1
         with:
-          input: values.yaml
+          values: values.yaml
           output: ${GITHUB_WORKSPACE}/my.output.json
           draft: 7
 ```
