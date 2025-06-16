@@ -2,7 +2,7 @@ name: Helm values.schema.json action
 author: losisin
 description: A GitHub action for generating json schema from multiple values files for Helm3 charts
 inputs:
-  input:
+  values:
     description: Input value file. Can be single or comma-separated list of yaml files
     required: false
   draft:
@@ -17,6 +17,9 @@ inputs:
   id:
     description: ID of the schema
     required: false
+  ref:
+    description: URI reference of the schema. Relative to CWD when using `bundle`
+    required: false
   title:
     description: Title of the schema
     required: false
@@ -28,6 +31,9 @@ inputs:
     required: false
   noAdditionalProperties:
     description: Additional properties allowed in the schema, including child objects
+    required: false
+  useHelmDocs:
+    description: Read description from helm-docs comments
     required: false
   git-push:
     description: If true it will commit and push the changes (ignored if `fail-on-diff` is set)

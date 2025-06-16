@@ -48,7 +48,7 @@ describe('run function', () => {
     installPluginMock.mockResolvedValue('/mocked/path')
     const inputMap: { [key: string]: string } = {
       output: 'output',
-      input: 'input',
+      values: 'values',
       draft: 'draft',
       indent: 'indent',
       'working-directory': 'test/path'
@@ -66,7 +66,7 @@ describe('run function', () => {
     await run()
 
     expect(installPluginMock).toHaveBeenCalledTimes(1)
-    expect(getInputMock).toHaveBeenCalledWith('input')
+    expect(getInputMock).toHaveBeenCalledWith('values')
     expect(getInputMock).toHaveBeenCalledWith('draft')
     expect(getInputMock).toHaveBeenCalledWith('output')
     expect(getInputMock).toHaveBeenCalledWith('indent')
@@ -83,7 +83,7 @@ describe('run function', () => {
     installPluginMock.mockResolvedValue('/mocked/path')
     const inputMap: { [key: string]: string } = {
       output: 'output',
-      input: 'input',
+      values: 'values',
       draft: 'draft',
       indent: 'indent',
       'fail-on-diff': 'true'
@@ -112,7 +112,7 @@ describe('run function', () => {
     installPluginMock.mockResolvedValue('/mocked/path')
     const inputMap: { [key: string]: string } = {
       output: 'output',
-      input: 'input',
+      values: 'values',
       draft: 'draft',
       indent: 'indent',
       'fail-on-diff': 'true'
@@ -133,7 +133,7 @@ describe('run function', () => {
 
     await run()
 
-    expect(getInputMock).toHaveBeenCalledWith('input')
+    expect(getInputMock).toHaveBeenCalledWith('values')
     expect(getInputMock).toHaveBeenCalledWith('output')
     expect(getInputMock).toHaveBeenCalledWith('draft')
     expect(getInputMock).toHaveBeenCalledWith('indent')
@@ -152,7 +152,7 @@ describe('run function', () => {
       'git-push-user-email': 'user@email.com',
       'git-commit-message': 'message',
       output: 'output',
-      input: 'input',
+      values: 'values',
       draft: 'draft',
       indent: 'indent',
       id: 'id',
@@ -180,8 +180,8 @@ describe('run function', () => {
 
     await run()
 
-    expect(installPluginMock).toHaveBeenCalledWith('v1.9.2')
-    expect(getInputMock).toHaveBeenCalledWith('input')
+    expect(installPluginMock).toHaveBeenCalledWith('v2.1.0')
+    expect(getInputMock).toHaveBeenCalledWith('values')
     expect(getInputMock).toHaveBeenCalledWith('draft')
     expect(getInputMock).toHaveBeenCalledWith('output')
     expect(getInputMock).toHaveBeenCalledWith('indent')
@@ -223,7 +223,7 @@ describe('run function', () => {
       'git-push': 'false',
       'fail-on-diff': 'false',
       output: 'output',
-      input: 'input',
+      values: 'values',
       draft: 'draft',
       indent: 'indent'
     }
