@@ -34671,8 +34671,8 @@ async function run() {
             '--no-additional-properties': noAdditionalProperties,
             '--bundle': bundle,
             '--bundle-root': bundleRoot,
-            '--k8s-schema-version': bundleWithoutID,
-            '--k8sSchemaVersion': k8sSchemaVersion,
+            '--bundle-without-id': bundleWithoutID,
+            '--k8s-schema-version': k8sSchemaVersion,
             '--k8s-schema-url': k8sSchemaURL,
             '--use-helm-docs': useHelmDocs
         };
