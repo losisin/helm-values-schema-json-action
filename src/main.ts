@@ -98,7 +98,7 @@ export async function run(): Promise<void> {
       '--bundle': bundle,
       '--bundle-root': bundleRoot,
       '--k8s-schema-version': bundleWithoutID,
-      '-k8sSchemaVersion': k8sSchemaVersion,
+      '--k8sSchemaVersion': k8sSchemaVersion,
       '--k8s-schema-url': k8sSchemaURL,
       '--use-helm-docs': useHelmDocs
     }
