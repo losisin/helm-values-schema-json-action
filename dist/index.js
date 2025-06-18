@@ -34628,14 +34628,14 @@ async function run() {
         catch {
             core.info('No .schema.yaml found or unable to parse it');
         }
-        const values = core.getInput('values') || (configFile.values || []).join(',');
+        const values = core.getInput('values') || (configFile.values || []).join(',') || 'dist/values.yaml';
         const draft = core.getInput('draft') || configFile.draft?.toString() || '2020';
-        const output = core.getInput('output') || configFile.output || 'values.schema.json';
+        const output = core.getInput('output') || configFile.output || 'dist/values.schema.json';
         const indent = core.getInput('indent') || configFile.indent?.toString() || '4';
-        const id = core.getInput('id') || configFile.schemaRoot?.id;
+        const id = core.getInput('id') || configFile.schemaRoot?.id || 'https://traefik.io/traefik-crds-helm-chart.schema.json';
         const ref = core.getInput('ref') || configFile.schemaRoot?.ref;
-        const title = core.getInput('title') || configFile.schemaRoot?.title;
-        const description = core.getInput('description') || configFile.schemaRoot?.description;
+        const title = core.getInput('title') || configFile.schemaRoot?.title || 'Traefik CRDs Helm Chart';
+        const description = core.getInput('description') || configFile.schemaRoot?.description || 'The Cloud Native Application Proxy';
         const additionalProperties = core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString();
         const noAdditionalProperties = core.getInput('noAdditionalProperties') || configFile.noAdditionalProperties?.toString();
         const gitPush = core.getInput('git-push');
@@ -34677,8 +34677,8 @@ async function run() {
             '--use-helm-docs': useHelmDocs
         };
         for (const [key, value] of Object.entries(options)) {
-            if (value !== undefined) {
-                args.push(key, value);
+            if (value !== undefined && value !== null) {
+                args.push(`${key}=${value}`);
             }
         }
         await exec.exec('schema', args);
