@@ -34677,8 +34677,8 @@ async function run() {
             '--use-helm-docs': useHelmDocs
         };
         for (const [key, value] of Object.entries(options)) {
-            if (value !== undefined) {
-                args.push(key, value);
+            if (value !== undefined && value !== null) {
+                args.push(`${key}=${value}`);
             }
         }
         await exec.exec('schema', args);

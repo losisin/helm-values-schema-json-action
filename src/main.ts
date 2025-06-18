@@ -104,8 +104,8 @@ export async function run(): Promise<void> {
     }
 
     for (const [key, value] of Object.entries(options)) {
-      if (value !== undefined) {
-        args.push(key, value)
+      if (value !== undefined && value !== null) {
+        args.push(`${key}=${value}`)
       }
     }
 
