@@ -23,7 +23,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
       - name: Generate values schema json
-        uses: losisin/helm-values-schema-json-action@v1
+        uses: losisin/helm-values-schema-json-action@v2
         with:
           values: values.yaml
 ```
@@ -77,7 +77,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
       - name: Generate values schema json
-        uses: losisin/helm-values-schema-json-action@v1
+        uses: losisin/helm-values-schema-json-action@v2
         with:
           values: values.yaml
           fail-on-diff: true
@@ -102,7 +102,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
       - name: Generate values schema json
-        uses: losisin/helm-values-schema-json-action@v1
+        uses: losisin/helm-values-schema-json-action@v2
         with:
           values: values.yaml
           git-push: true
@@ -122,7 +122,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
       - name: Generate values schema json
-        uses: losisin/helm-values-schema-json-action@v1
+        uses: losisin/helm-values-schema-json-action@v2
         with:
           values: values.yaml
           git-push: true
@@ -147,7 +147,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
       - name: Generate values schema json
-        uses: losisin/helm-values-schema-json-action@v1
+        uses: losisin/helm-values-schema-json-action@v2
         with:
           values: values.yaml,${GITHUB_WORKSPACE}/values2.yaml
           output: my.output.json
@@ -169,7 +169,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
       - name: Generate values schema json
-        uses: losisin/helm-values-schema-json-action@v1
+        uses: losisin/helm-values-schema-json-action@v2
         with:
           values: values.yaml
           output: ${GITHUB_WORKSPACE}/my.output.json
@@ -190,7 +190,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
       - name: Generate values schema json
-        uses: losisin/helm-values-schema-json-action@v1
+        uses: losisin/helm-values-schema-json-action@v2
         with:
           working-directory: path/to/helm/chart
 ```
