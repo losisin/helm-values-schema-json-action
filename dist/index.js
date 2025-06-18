@@ -34628,14 +34628,14 @@ async function run() {
         catch {
             core.info('No .schema.yaml found or unable to parse it');
         }
-        const values = core.getInput('values') || (configFile.values || []).join(',') || 'dist/values.yaml';
+        const values = core.getInput('values') || (configFile.values || []).join(',');
         const draft = core.getInput('draft') || configFile.draft?.toString() || '2020';
-        const output = core.getInput('output') || configFile.output || 'dist/values.schema.json';
+        const output = core.getInput('output') || configFile.output || 'values.schema.json';
         const indent = core.getInput('indent') || configFile.indent?.toString() || '4';
-        const id = core.getInput('id') || configFile.schemaRoot?.id || 'https://traefik.io/traefik-crds-helm-chart.schema.json';
+        const id = core.getInput('id') || configFile.schemaRoot?.id;
         const ref = core.getInput('ref') || configFile.schemaRoot?.ref;
-        const title = core.getInput('title') || configFile.schemaRoot?.title || 'Traefik CRDs Helm Chart';
-        const description = core.getInput('description') || configFile.schemaRoot?.description || 'The Cloud Native Application Proxy';
+        const title = core.getInput('title') || configFile.schemaRoot?.title;
+        const description = core.getInput('description') || configFile.schemaRoot?.description;
         const additionalProperties = core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString();
         const noAdditionalProperties = core.getInput('noAdditionalProperties') || configFile.noAdditionalProperties?.toString();
         const gitPush = core.getInput('git-push');
