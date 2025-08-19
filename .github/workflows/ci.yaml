@@ -65,7 +65,7 @@ jobs:
         id: test-action
         uses: ./
         with:
-          input: __tests__/fixtures/values.yaml
+          values: __tests__/fixtures/values.yaml
           output: __tests__/fixtures/values.schema.json
 
       - name: Test 2
