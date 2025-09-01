@@ -34520,7 +34520,7 @@ const fs = __importStar(__nccwpck_require__(9896));
 const tc = __importStar(__nccwpck_require__(3472));
 const pluginName = 'schema';
 const pluginRepository = 'helm-values-schema-json';
-const version = 'v2.2.1';
+const version = 'v2.3.0';
 function getPlugin(pluginVersion) {
     const osArch = os.arch();
     const osType = os.type();
@@ -34608,7 +34608,7 @@ const exec = __importStar(__nccwpck_require__(5236));
 const simple_git_1 = __nccwpck_require__(9065);
 const yaml_1 = __nccwpck_require__(8815);
 const fs = __importStar(__nccwpck_require__(1943));
-const version = 'v2.2.1';
+const version = 'v2.3.0';
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.

@@ -180,7 +180,7 @@ describe('run function', () => {
 
     await run()
 
-    expect(installPluginMock).toHaveBeenCalledWith('v2.2.1')
+    expect(installPluginMock).toHaveBeenCalledWith('v2.3.0')
     expect(getInputMock).toHaveBeenCalledWith('values')
     expect(getInputMock).toHaveBeenCalledWith('draft')
     expect(getInputMock).toHaveBeenCalledWith('output')

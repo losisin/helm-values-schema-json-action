@@ -6,7 +6,7 @@ import * as tc from '@actions/tool-cache'
 
 const pluginName = 'schema'
 const pluginRepository = 'helm-values-schema-json'
-const version = 'v2.2.1'
+const version = 'v2.3.0'
 
 export function getPlugin(pluginVersion: string): string {
   const osArch = os.arch()
