@@ -34648,7 +34648,7 @@ async function run() {
         const bundleWithoutID = core.getInput('bundle-without-id') || configFile.bundleWithoutID?.toString();
         const k8sSchemaVersion = core.getInput('k8s-schema-version') || configFile.k8sSchemaVersion;
         const k8sSchemaURL = core.getInput('k8s-schema-url') || configFile.k8sSchemaURL;
-        const useHelmDocs = core.getInput('use-helm-docs') || configFile.useHelmDocs?.toString();
+        const useHelmDocs = core.getInput('useHelmDocs') || configFile.useHelmDocs?.toString();
         core.startGroup(`Downloading JSON schema ${version}`);
         const cachedPath = await (0, install_1.installPlugin)(version);
         core.endGroup();
