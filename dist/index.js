@@ -7101,7 +7101,7 @@ function last(input, offset = 0) {
   }
 }
 function isArrayLike(input) {
-  return !!(input && typeof input.length === "number");
+  return filterHasLength(input);
 }
 function toLinesWithContent(input = "", trimmed2 = true, separator = "\n") {
   return input.split(separator).reduce((output, line) => {
@@ -7154,14 +7154,16 @@ function asCamelCase(str) {
   });
 }
 function asStringArray(source) {
-  return asArray(source).map(String);
+  return asArray(source).map((item) => {
+    return item instanceof String ? item : String(item);
+  });
 }
 function asNumber(source, onNaN = 0) {
   if (source == null) {
     return onNaN;
   }
   const num = parseInt(source, 10);
-  return isNaN(num) ? onNaN : num;
+  return Number.isNaN(num) ? onNaN : num;
 }
 function prefixedArray(input, prefix) {
   const output = [];
@@ -7174,10 +7176,13 @@ function bufferToString(input) {
   return (Array.isArray(input) ? import_node_buffer.Buffer.concat(input) : input).toString("utf-8");
 }
 function pick(source, properties) {
-  return Object.assign(
-    {},
-    ...properties.map((property) => property in source ? { [property]: source[property] } : {})
-  );
+  const out = {};
+  properties.forEach((key) => {
+    if (source[key] !== void 0) {
+      out[key] = source[key];
+    }
+  });
+  return out;
 }
 function delay(duration = 0) {
   return new Promise((done) => setTimeout(done, duration));
@@ -7194,6 +7199,7 @@ var init_util = __esm({
     "use strict";
     import_node_buffer = __nccwpck_require__(4573);
     import_file_exists = __nccwpck_require__(7117);
+    init_argument_filters();
     NULL = "\0";
     NOOP = () => {
     };
@@ -7218,20 +7224,20 @@ function filterPlainObject(input) {
 function filterFunction(input) {
   return typeof input === "function";
 }
-var filterArray, filterString, filterStringArray, filterStringOrStringArray, filterHasLength;
+var filterArray, filterNumber, filterString, filterStringOrStringArray, filterHasLength;
 var init_argument_filters = __esm({
   "src/lib/utils/argument-filters.ts"() {
     "use strict";
-    init_util();
     init_pathspec();
+    init_util();
     filterArray = (input) => {
       return Array.isArray(input);
     };
+    filterNumber = (input) => {
+      return typeof input === "number";
+    };
     filterString = (input) => {
       return typeof input === "string";
-    };
-    filterStringArray = (input) => {
-      return Array.isArray(input) && input.every(filterString);
     };
     filterStringOrStringArray = (input) => {
       return filterString(input) || Array.isArray(input) && input.every(filterString);
@@ -7240,7 +7246,7 @@ var init_argument_filters = __esm({
       if (input == null || "number|boolean|function".includes(typeof input)) {
         return false;
       }
-      return Array.isArray(input) || typeof input === "string" || typeof input.length === "number";
+      return typeof input.length === "number";
     };
   }
 });
@@ -7278,6 +7284,9 @@ var init_git_output_streams = __esm({
 });
 
 // src/lib/utils/line-parser.ts
+function useMatchesDefault() {
+  throw new Error(`LineParser:useMatches not implemented`);
+}
 var LineParser, RemoteLineParser;
 var init_line_parser = __esm({
   "src/lib/utils/line-parser.ts"() {
@@ -7285,6 +7294,7 @@ var init_line_parser = __esm({
     LineParser = class {
       constructor(regExp, useMatches) {
         this.matches = [];
+        this.useMatches = useMatchesDefault;
         this.parse = (line, target) => {
           this.resetMatches();
           if (!this._regExp.every((reg, index) => this.addMatch(reg, index, line(index)))) {
@@ -7296,10 +7306,6 @@ var init_line_parser = __esm({
         if (useMatches) {
           this.useMatches = useMatches;
         }
-      }
-      // @ts-ignore
-      useMatches(target, match) {
-        throw new Error(`LineParser:useMatches not implemented`);
       }
       resetMatches() {
         this.matches.length = 0;
@@ -7393,7 +7399,7 @@ function getTrailingOptions(args, initialPrimitive = 0, objectOnly = false) {
 }
 function trailingArrayArgument(args) {
   const hasTrailingCallback = typeof last(args) === "function";
-  return filterType(last(args, hasTrailingCallback ? 1 : 0), filterArray, []);
+  return asStringArray(filterType(last(args, hasTrailingCallback ? 1 : 0), filterArray, []));
 }
 function trailingOptionsArgument(args) {
   const hasTrailingCallback = filterFunction(last(args));
@@ -7460,10 +7466,10 @@ __export(utils_exports, {
   filterArray: () => filterArray,
   filterFunction: () => filterFunction,
   filterHasLength: () => filterHasLength,
+  filterNumber: () => filterNumber,
   filterPlainObject: () => filterPlainObject,
   filterPrimitives: () => filterPrimitives,
   filterString: () => filterString,
-  filterStringArray: () => filterStringArray,
   filterStringOrStringArray: () => filterStringOrStringArray,
   filterType: () => filterType,
   first: () => first,
@@ -7827,7 +7833,7 @@ var init_ConfigList = __esm({
       }
       addValue(file, key, value) {
         const values = this.addFile(file);
-        if (!values.hasOwnProperty(key)) {
+        if (!Object.hasOwn(values, key)) {
           values[key] = value;
         } else if (Array.isArray(values[key])) {
           values[key].push(value);
@@ -7842,7 +7848,7 @@ var init_ConfigList = __esm({
 
 // src/lib/tasks/config.ts
 function asConfigScope(scope, fallback) {
-  if (typeof scope === "string" && GitConfigScope.hasOwnProperty(scope)) {
+  if (typeof scope === "string" && Object.hasOwn(GitConfigScope, scope)) {
     return scope;
   }
   return fallback;
@@ -8061,12 +8067,13 @@ function getResetMode(mode) {
   return;
 }
 function isValidResetMode(mode) {
-  return ResetModes.includes(mode);
+  return typeof mode === "string" && validResetModes.includes(mode);
 }
-var ResetMode, ResetModes;
+var ResetMode, validResetModes;
 var init_reset = __esm({
   "src/lib/tasks/reset.ts"() {
     "use strict";
+    init_utils();
     init_task();
     ResetMode = /* @__PURE__ */ ((ResetMode2) => {
       ResetMode2["MIXED"] = "mixed";
@@ -8076,7 +8083,7 @@ var init_reset = __esm({
       ResetMode2["KEEP"] = "keep";
       return ResetMode2;
     })(ResetMode || {});
-    ResetModes = Array.from(Object.values(ResetMode));
+    validResetModes = asStringArray(Object.values(ResetMode));
   }
 });
 
@@ -9119,7 +9126,7 @@ var init_count_objects = __esm({
       /([a-z-]+): (\d+)$/,
       (result, [key, value]) => {
         const property = asCamelCase(key);
-        if (result.hasOwnProperty(property)) {
+        if (Object.hasOwn(result, property)) {
           result[property] = asNumber(value);
         }
       }
@@ -9211,7 +9218,10 @@ function commit_default() {
       const task = rejectDeprecatedSignatures(message) || commitTask(
         asArray(message),
         asArray(filterType(rest[0], filterStringOrStringArray, [])),
-        [...filterType(rest[1], filterArray, []), ...getTrailingOptions(arguments, 0, true)]
+        [
+          ...asStringArray(filterType(rest[1], filterArray, [])),
+          ...getTrailingOptions(arguments, 0, true)
+        ]
       );
       return this._runTask(task, next);
     }
@@ -9637,7 +9647,7 @@ function log_default() {
       const next = trailingFunctionArgument(arguments);
       const options = parseLogOptions(
         trailingOptionsArgument(arguments),
-        filterType(arguments[0], filterArray)
+        asStringArray(filterType(arguments[0], filterArray, []))
       );
       const task = rejectDeprecatedSignatures(...rest) || validateLogFormatConfig(options.commands) || createLogTask(options);
       return this._runTask(task, next);
@@ -10282,18 +10292,19 @@ var init_StatusSummary = __esm({
           const behindReg = /behind (\d+)/;
           const currentReg = /^(.+?(?=(?:\.{3}|\s|$)))/;
           const trackingReg = /\.{3}(\S*)/;
-          const onEmptyBranchReg = /\son\s([\S]+)$/;
-          let regexResult;
-          regexResult = aheadReg.exec(line);
+          const onEmptyBranchReg = /\son\s(\S+?)(?=\.{3}|$)/;
+          let regexResult = aheadReg.exec(line);
           result.ahead = regexResult && +regexResult[1] || 0;
           regexResult = behindReg.exec(line);
           result.behind = regexResult && +regexResult[1] || 0;
           regexResult = currentReg.exec(line);
-          result.current = regexResult && regexResult[1];
+          result.current = filterType(regexResult?.[1], filterString, null);
           regexResult = trackingReg.exec(line);
-          result.tracking = regexResult && regexResult[1];
+          result.tracking = filterType(regexResult?.[1], filterString, null);
           regexResult = onEmptyBranchReg.exec(line);
-          result.current = regexResult && regexResult[1] || result.current;
+          if (regexResult) {
+            result.current = filterType(regexResult?.[1], filterString, result.current);
+          }
           result.detached = /\(no branch\)/.test(line);
         }
       ]
@@ -10728,10 +10739,14 @@ var init_BranchSummary = __esm({
 function branchStatus(input) {
   return input ? input.charAt(0) : "";
 }
-function parseBranchSummary(stdOut) {
-  return parseStringResponse(new BranchSummaryResult(), parsers9, stdOut);
+function parseBranchSummary(stdOut, currentOnly = false) {
+  return parseStringResponse(
+    new BranchSummaryResult(),
+    currentOnly ? [currentBranchParser] : parsers9,
+    stdOut
+  );
 }
-var parsers9;
+var parsers9, currentBranchParser;
 var init_parse_branch = __esm({
   "src/lib/parsers/parse-branch.ts"() {
     "use strict";
@@ -10751,6 +10766,9 @@ var init_parse_branch = __esm({
         }
       )
     ];
+    currentBranchParser = new LineParser(/^(\S+)$/s, (result, [name]) => {
+      result.push("*" /* CURRENT */, false, name, "", "");
+    });
   }
 });
 
@@ -10769,6 +10787,7 @@ function containsDeleteBranchCommand(commands) {
 }
 function branchTask(customArgs) {
   const isDelete = containsDeleteBranchCommand(customArgs);
+  const isCurrentOnly = customArgs.includes("--show-current");
   const commands = ["branch", ...customArgs];
   if (commands.length === 1) {
     commands.push("-a");
@@ -10783,16 +10802,17 @@ function branchTask(customArgs) {
       if (isDelete) {
         return parseBranchDeletions(stdOut, stdErr).all[0];
       }
-      return parseBranchSummary(stdOut);
+      return parseBranchSummary(stdOut, isCurrentOnly);
     }
   };
 }
 function branchLocalTask() {
-  const parser4 = parseBranchSummary;
   return {
     format: "utf-8",
     commands: ["branch", "-v"],
-    parser: parser4
+    parser(stdOut) {
+      return parseBranchSummary(stdOut);
+    }
   };
 }
 function deleteBranchesTask(branches, forceDelete = false) {
@@ -10840,12 +10860,17 @@ var init_branch = __esm({
 });
 
 // src/lib/responses/CheckIgnore.ts
-var parseCheckIgnore;
+function toPath(input) {
+  const path = input.trim().replace(/^["']|["']$/g, "");
+  return path && (0, import_node_path.normalize)(path);
+}
+var import_node_path, parseCheckIgnore;
 var init_CheckIgnore = __esm({
   "src/lib/responses/CheckIgnore.ts"() {
     "use strict";
+    import_node_path = __nccwpck_require__(6760);
     parseCheckIgnore = (text) => {
-      return text.split(/\n/g).map((line) => line.trim()).filter((file) => !!file);
+      return text.split(/\n/g).map(toPath).filter(Boolean);
     };
   }
 });
@@ -11067,7 +11092,7 @@ function parseGetRemotes(text) {
 function parseGetRemotesVerbose(text) {
   const remotes = {};
   forEach(text, ([name, url, purpose]) => {
-    if (!remotes.hasOwnProperty(name)) {
+    if (!Object.hasOwn(remotes, name)) {
       remotes[name] = {
         name,
         refs: { fetch: "", push: "" }
@@ -11199,8 +11224,8 @@ var init_sub_module = __esm({
 
 // src/lib/responses/TagList.ts
 function singleSorted(a, b) {
-  const aIsNum = isNaN(a);
-  const bIsNum = isNaN(b);
+  const aIsNum = Number.isNaN(a);
+  const bIsNum = Number.isNaN(b);
   if (aIsNum !== bIsNum) {
     return aIsNum ? 1 : -1;
   }
@@ -34858,6 +34883,14 @@ module.exports = require("node:events");
 
 /***/ }),
 
+/***/ 6760:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("node:path");
+
+/***/ }),
+
 /***/ 7075:
 /***/ ((module) => {
 
@@ -36694,7 +36727,7 @@ function composeCollection(CN, ctx, token, props, onError) {
     let tag = ctx.schema.tags.find(t => t.tag === tagName && t.collection === expType);
     if (!tag) {
         const kt = ctx.schema.knownTags[tagName];
-        if (kt && kt.collection === expType) {
+        if (kt?.collection === expType) {
             ctx.schema.tags.push(Object.assign({}, kt, { default: false }));
             tag = kt;
         }
@@ -37580,7 +37613,7 @@ function resolveBlockSeq({ composeNode, composeEmptyNode }, ctx, bs, onError, ta
         });
         if (!props.found) {
             if (props.anchor || props.tag || value) {
-                if (value && value.type === 'block-seq')
+                if (value?.type === 'block-seq')
                     onError(props.end, 'BAD_INDENT', 'All sequence items must start at the same column');
                 else
                     onError(offset, 'MISSING_CHAR', 'Sequence item without - indicator');
@@ -37797,7 +37830,7 @@ function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onErr
                 }
             }
             else if (value) {
-                if ('source' in value && value.source && value.source[0] === ':')
+                if ('source' in value && value.source?.[0] === ':')
                     onError(value, 'MISSING_CHAR', `Missing space after : in ${fcName}`);
                 else
                     onError(valueProps.start, 'MISSING_CHAR', `Missing , or : between ${fcName} items`);
@@ -37841,7 +37874,7 @@ function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onErr
     const expectedEnd = isMap ? '}' : ']';
     const [ce, ...ee] = fc.end;
     let cePos = offset;
-    if (ce && ce.source === expectedEnd)
+    if (ce?.source === expectedEnd)
         cePos = ce.offset + ce.source.length;
     else {
         const name = fcName[0].toUpperCase() + fcName.substring(1);
@@ -39222,7 +39255,7 @@ const prettifyError = (src, lc) => (error) => {
     if (/[^ ]/.test(lineStr)) {
         let count = 1;
         const end = error.linePos[1];
-        if (end && end.line === line && end.col > col) {
+        if (end?.line === line && end.col > col) {
             count = Math.max(1, Math.min(end.col - col, 80 - ci));
         }
         const pointer = ' '.repeat(ci) + '^'.repeat(count);
@@ -39390,7 +39423,7 @@ class Alias extends Node.NodeBase {
             data = anchors.get(source);
         }
         /* istanbul ignore if */
-        if (!data || data.res === undefined) {
+        if (data?.res === undefined) {
             const msg = 'This should not happen: Alias anchor was not resolved?';
             throw new ReferenceError(msg);
         }
@@ -41732,7 +41765,7 @@ class Parser {
     }
     *step() {
         const top = this.peek(1);
-        if (this.type === 'doc-end' && (!top || top.type !== 'doc-end')) {
+        if (this.type === 'doc-end' && top?.type !== 'doc-end') {
             while (this.stack.length > 0)
                 yield* this.pop();
             this.stack.push({
@@ -42264,7 +42297,7 @@ class Parser {
             do {
                 yield* this.pop();
                 top = this.peek(1);
-            } while (top && top.type === 'flow-collection');
+            } while (top?.type === 'flow-collection');
         }
         else if (fc.end.length === 0) {
             switch (this.type) {
@@ -44450,7 +44483,7 @@ function stringifyNumber({ format, minFractionDigits, tag, value }) {
     const num = typeof value === 'number' ? value : Number(value);
     if (!isFinite(num))
         return isNaN(num) ? '.nan' : num < 0 ? '-.inf' : '.inf';
-    let n = JSON.stringify(value);
+    let n = Object.is(value, -0) ? '-0' : JSON.stringify(value);
     if (!format &&
         minFractionDigits &&
         (!tag || tag === 'tag:yaml.org,2002:float') &&
@@ -44581,7 +44614,7 @@ function stringifyPair({ key, value }, ctx, onComment, onChompKeep) {
             ws += `\n${stringifyComment.indentComment(cs, ctx.indent)}`;
         }
         if (valueStr === '' && !ctx.inFlow) {
-            if (ws === '\n')
+            if (ws === '\n' && valueComment)
                 ws = '\n\n';
         }
         else {
