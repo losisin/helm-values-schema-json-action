@@ -38071,6 +38071,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getTargetValues = getTargetValues;
 exports.run = run;
 const path = __importStar(__nccwpck_require__(6928));
 const install_1 = __nccwpck_require__(232);
@@ -38080,6 +38081,9 @@ const simple_git_1 = __nccwpck_require__(9065);
 const yaml_1 = __nccwpck_require__(8815);
 const fs = __importStar(__nccwpck_require__(1943));
 const version = 'v2.3.1';
+function getTargetValues(configFile) {
+    return core.getInput('values') || (configFile.values || []).join(',') || 'values.yaml';
+}
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -38099,7 +38103,7 @@ async function run() {
         catch {
             core.info('No .schema.yaml found or unable to parse it');
         }
-        const values = core.getInput('values') || (configFile.values || []).join(',');
+        const values = getTargetValues(configFile);
         const draft = core.getInput('draft') || configFile.draft?.toString() || '2020';
         const output = core.getInput('output') || configFile.output || 'values.schema.json';
         const indent = core.getInput('indent') || configFile.indent?.toString() || '4';
