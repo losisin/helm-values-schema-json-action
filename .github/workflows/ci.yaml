@@ -72,6 +72,7 @@ jobs:
         continue-on-error: true
         uses: ./
         with:
+          values: __tests__/fixtures/values.yaml
           working-directory: __tests__/fixtures
           fail-on-diff: true
 
