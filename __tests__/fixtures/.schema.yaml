@@ -1,4 +1,4 @@
-input:
+values:
   - values.yaml
   - production/values.yaml
 
