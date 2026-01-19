@@ -5,7 +5,7 @@
  * Specifically, the inputs listed in `action.yml` should be set as environment
  * variables following the pattern `INPUT_<INPUT_NAME>`.
  */
-import { run } from '../src/main'
+import { getTargetValues, run } from '../src/main'
 
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
@@ -284,5 +284,21 @@ describe('run function', () => {
     await run()
 
     expect(setFailedMock).not.toHaveBeenCalled()
+  })
+})
+
+describe('getTargetValues', () => {
+  it('should handle case when no values provided', async () => {
+    let result = getTargetValues({})
+
+    expect(result).toEqual('values.yaml')
+  })
+
+  it('should prioritize config values', async () => {
+    let result = getTargetValues({
+      values: ['other.yaml']
+    })
+
+    expect(result).toEqual('other.yaml')
   })
 })

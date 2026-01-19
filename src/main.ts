@@ -29,6 +29,10 @@ interface SchemaConfig {
   useHelmDocs?: boolean
 }
 
+export function getTargetValues(configFile: SchemaConfig): string {
+  return core.getInput('values') || (configFile.values || []).join(',') || 'values.yaml'
+}
+
 /**
  * The main function for the action.
  * @returns {Promise<void>} Resolves when the action is complete.
@@ -49,7 +53,7 @@ export async function run(): Promise<void> {
       core.info('No .schema.yaml found or unable to parse it')
     }
 
-    const values = core.getInput('values') || (configFile.values || []).join(',')
+    const values = getTargetValues(configFile)
     const draft = core.getInput('draft') || configFile.draft?.toString() || '2020'
     const output = core.getInput('output') || configFile.output || 'values.schema.json'
     const indent = core.getInput('indent') || configFile.indent?.toString() || '4'
