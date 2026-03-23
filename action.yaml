@@ -83,7 +83,7 @@ outputs:
    plugin-path:
       description: 'Path to the cached JSON schema binary'
 runs:
-  using: node20
+  using: node24
   main: dist/index.js
 branding:
   icon: file-text
