@@ -7,12 +7,21 @@ import typescript from '@rollup/plugin-typescript'
 const config = {
   input: 'src/index.ts',
   output: {
-    esModule: true,
     file: 'dist/index.js',
-    format: 'es',
+    format: 'cjs',
     sourcemap: true
   },
-  plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs()]
+  plugins: [
+    typescript({
+      tsconfig: './tsconfig.json',
+      compilerOptions: {
+        module: 'ESNext',
+        moduleResolution: 'Bundler'
+      }
+    }),
+    nodeResolve({ preferBuiltins: true }),
+    commonjs()
+  ]
 }
 
 export default config
