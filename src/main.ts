@@ -30,7 +30,11 @@ interface SchemaConfig {
 }
 
 export function getTargetValues(configFile: SchemaConfig): string {
-  return core.getInput('values') || (configFile.values || []).join(',') || 'values.yaml'
+  return (
+    core.getInput('values') ||
+    (configFile.values || []).join(',') ||
+    'values.yaml'
+  )
 }
 
 /**
@@ -54,15 +58,23 @@ export async function run(): Promise<void> {
     }
 
     const values = getTargetValues(configFile)
-    const draft = core.getInput('draft') || configFile.draft?.toString() || '2020'
-    const output = core.getInput('output') || configFile.output || 'values.schema.json'
-    const indent = core.getInput('indent') || configFile.indent?.toString() || '4'
+    const draft =
+      core.getInput('draft') || configFile.draft?.toString() || '2020'
+    const output =
+      core.getInput('output') || configFile.output || 'values.schema.json'
+    const indent =
+      core.getInput('indent') || configFile.indent?.toString() || '4'
     const id = core.getInput('id') || configFile.schemaRoot?.id
     const ref = core.getInput('ref') || configFile.schemaRoot?.ref
     const title = core.getInput('title') || configFile.schemaRoot?.title
-    const description = core.getInput('description') || configFile.schemaRoot?.description
-    const additionalProperties = core.getInput('additionalProperties') || configFile.schemaRoot?.additionalProperties?.toString()
-    const noAdditionalProperties = core.getInput('noAdditionalProperties') || configFile.noAdditionalProperties?.toString()
+    const description =
+      core.getInput('description') || configFile.schemaRoot?.description
+    const additionalProperties =
+      core.getInput('additionalProperties') ||
+      configFile.schemaRoot?.additionalProperties?.toString()
+    const noAdditionalProperties =
+      core.getInput('noAdditionalProperties') ||
+      configFile.noAdditionalProperties?.toString()
     const gitPush = core.getInput('git-push')
     const gitPushUserName = core.getInput('git-push-user-name')
     const gitPushUserEmail = core.getInput('git-push-user-email')
@@ -70,10 +82,15 @@ export async function run(): Promise<void> {
     const failOnDiff = core.getInput('fail-on-diff')
     const bundle = core.getInput('bundle') || configFile.bundle?.toString()
     const bundleRoot = core.getInput('bundle-root') || configFile.bundleRoot
-    const bundleWithoutID = core.getInput('bundle-without-id') || configFile.bundleWithoutID?.toString()
-    const k8sSchemaVersion = core.getInput('k8s-schema-version') || configFile.k8sSchemaVersion
-    const k8sSchemaURL = core.getInput('k8s-schema-url') || configFile.k8sSchemaURL
-    const useHelmDocs = core.getInput('useHelmDocs') || configFile.useHelmDocs?.toString()
+    const bundleWithoutID =
+      core.getInput('bundle-without-id') ||
+      configFile.bundleWithoutID?.toString()
+    const k8sSchemaVersion =
+      core.getInput('k8s-schema-version') || configFile.k8sSchemaVersion
+    const k8sSchemaURL =
+      core.getInput('k8s-schema-url') || configFile.k8sSchemaURL
+    const useHelmDocs =
+      core.getInput('useHelmDocs') || configFile.useHelmDocs?.toString()
 
     core.startGroup(`Downloading JSON schema ${version}`)
     const cachedPath = await installPlugin(version)
@@ -83,7 +100,9 @@ export async function run(): Promise<void> {
       core.addPath(path.dirname(cachedPath))
     }
 
-    core.info(`JSON schema binary '${version}' has been cached at ${cachedPath}`)
+    core.info(
+      `JSON schema binary '${version}' has been cached at ${cachedPath}`
+    )
     core.setOutput('plugin-path', cachedPath)
 
     const args: string[] = []
@@ -118,7 +137,9 @@ export async function run(): Promise<void> {
     const git = simpleGit()
     const statusSummary = await git.status()
 
-    const outputStatus = statusSummary.files.find(file => file.path.endsWith(output))
+    const outputStatus = statusSummary.files.find((file) =>
+      file.path.endsWith(output)
+    )
     if (outputStatus) {
       switch (true) {
         case failOnDiff === 'true':

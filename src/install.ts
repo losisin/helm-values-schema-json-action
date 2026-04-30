@@ -47,7 +47,7 @@ export function findPlugin(pluginFolder: string): string {
   const executableExtension = os.type().startsWith('Win') ? '.exe' : ''
   const targetFileName = pluginName + executableExtension
 
-  const foundFiles = files.filter(file => {
+  const foundFiles = files.filter((file) => {
     const filePath = path.join(pluginFolder, file)
     if (fs.statSync(filePath).isDirectory()) {
       return false

@@ -2,6 +2,7 @@
  * Unit tests for the action's entrypoint, src/index.ts
  */
 
+import { jest } from '@jest/globals'
 import * as main from '../src/main'
 
 // Mock the action's entrypoint

@@ -11,6 +11,7 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { simpleGit, SimpleGit } from 'simple-git'
 import * as fs from 'fs/promises'
+import { jest } from '@jest/globals'
 import { installPlugin } from '../src/install'
 
 jest.mock('@actions/core')
@@ -39,8 +40,12 @@ describe('run function', () => {
     mockChdir = jest.spyOn(process, 'chdir').mockImplementation()
     setFailedMock = jest.spyOn(core, 'setFailed')
     execMock = jest.spyOn(exec, 'exec').mockImplementation()
-    simpleGitMock = simpleGit as unknown as jest.MockedFunction<typeof simpleGit>
-    installPluginMock = installPlugin as unknown as jest.MockedFunction<typeof installPlugin>
+    simpleGitMock = simpleGit as unknown as jest.MockedFunction<
+      typeof simpleGit
+    >
+    installPluginMock = installPlugin as unknown as jest.MockedFunction<
+      typeof installPlugin
+    >
     mockFs = fs as unknown as jest.Mocked<typeof fs>
   })
 
@@ -58,9 +63,9 @@ describe('run function', () => {
       return inputMap[inputName]
     })
 
-    const gitMock: jest.Mocked<SimpleGit> = {
+    const gitMock = {
       status: jest.fn().mockResolvedValue({ files: [] })
-    } as any
+    } as unknown as jest.Mocked<SimpleGit>
     simpleGitMock.mockReturnValue(gitMock)
 
     await run()
@@ -74,8 +79,12 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('working-directory')
     expect(execMock).toHaveBeenCalledTimes(1)
     expect(gitMock.status).toHaveBeenCalledTimes(1)
-    expect(infoMock).toHaveBeenCalledWith('Setting working directory to: test/path')
-    expect(infoMock).toHaveBeenCalledWith('No .schema.yaml found or unable to parse it')
+    expect(infoMock).toHaveBeenCalledWith(
+      'Setting working directory to: test/path'
+    )
+    expect(infoMock).toHaveBeenCalledWith(
+      'No .schema.yaml found or unable to parse it'
+    )
     expect(mockChdir).toHaveBeenCalledWith('test/path')
   })
 
@@ -93,18 +102,21 @@ describe('run function', () => {
       return inputMap[inputName]
     })
 
-    const gitMock: jest.Mocked<SimpleGit> = {
+    const gitMock = {
       status: jest.fn().mockResolvedValue({
         files: [{ path: 'output' }]
       }),
       diff: jest.fn().mockResolvedValue('- old \n+ new ')
-    } as any
+    } as unknown as jest.Mocked<SimpleGit>
 
     simpleGitMock.mockReturnValue(gitMock)
 
     await run()
 
-    expect(infoMock).toHaveBeenNthCalledWith(3, "Diff for 'output':\n- old \n+ new ")
+    expect(infoMock).toHaveBeenNthCalledWith(
+      3,
+      "Diff for 'output':\n- old \n+ new "
+    )
     expect(setFailedMock).toHaveBeenCalledWith("'output' has changed")
   })
 
@@ -122,12 +134,12 @@ describe('run function', () => {
       return inputMap[inputName]
     })
 
-    const gitMock: jest.Mocked<SimpleGit> = {
+    const gitMock = {
       status: jest.fn().mockResolvedValue({
         files: [{ path: 'output' }]
       }),
       diff: jest.fn().mockRejectedValue(new Error('diff failed'))
-    } as any
+    } as unknown as jest.Mocked<SimpleGit>
 
     simpleGitMock.mockReturnValue(gitMock)
 
@@ -166,7 +178,7 @@ describe('run function', () => {
       return inputMap[inputName]
     })
 
-    const gitMock: jest.Mocked<SimpleGit> = {
+    const gitMock = {
       status: jest.fn().mockResolvedValue({
         files: [{ path: 'output' }]
       }),
@@ -174,7 +186,7 @@ describe('run function', () => {
       add: jest.fn().mockResolvedValue(undefined),
       commit: jest.fn().mockResolvedValue(undefined),
       push: jest.fn().mockResolvedValue(undefined)
-    } as any
+    } as unknown as jest.Mocked<SimpleGit>
 
     simpleGitMock.mockReturnValue(gitMock)
 
@@ -196,8 +208,16 @@ describe('run function', () => {
     expect(getInputMock).toHaveBeenCalledWith('git-commit-message')
     expect(execMock).toHaveBeenCalledTimes(1)
     expect(gitMock.status).toHaveBeenCalledTimes(1)
-    expect(gitMock.addConfig).toHaveBeenNthCalledWith(1, 'user.name', 'username')
-    expect(gitMock.addConfig).toHaveBeenNthCalledWith(2, 'user.email', 'user@email.com')
+    expect(gitMock.addConfig).toHaveBeenNthCalledWith(
+      1,
+      'user.name',
+      'username'
+    )
+    expect(gitMock.addConfig).toHaveBeenNthCalledWith(
+      2,
+      'user.email',
+      'user@email.com'
+    )
     expect(gitMock.add).toHaveBeenCalledWith(['output'])
     expect(gitMock.commit).toHaveBeenCalledWith('message')
     expect(gitMock.push).toHaveBeenCalledTimes(1)
@@ -232,21 +252,25 @@ describe('run function', () => {
       return inputMap[inputName]
     })
 
-    const gitMock: jest.Mocked<SimpleGit> = {
+    const gitMock = {
       status: jest.fn().mockResolvedValue({
         files: [{ path: 'output' }]
       })
-    } as any
+    } as unknown as jest.Mocked<SimpleGit>
 
     simpleGitMock.mockReturnValue(gitMock)
 
     await run()
 
-    expect(infoMock).toHaveBeenLastCalledWith("'output' has changed, but no action was requested.")
+    expect(infoMock).toHaveBeenLastCalledWith(
+      "'output' has changed, but no action was requested."
+    )
   })
 
   it('should handle .schema.yaml configuration', async () => {
-    mockFs.readFile.mockResolvedValue('title: My Schema\ndescription: Test schema')
+    mockFs.readFile.mockResolvedValue(
+      'title: My Schema\ndescription: Test schema'
+    )
     installPluginMock.mockResolvedValue('/mocked/path')
     const inputMap: { [key: string]: string } = {
       'working-directory': 'test/path'
@@ -289,13 +313,13 @@ describe('run function', () => {
 
 describe('getTargetValues', () => {
   it('should handle case when no values provided', async () => {
-    let result = getTargetValues({})
+    const result = getTargetValues({})
 
     expect(result).toEqual('values.yaml')
   })
 
   it('should prioritize config values', async () => {
-    let result = getTargetValues({
+    const result = getTargetValues({
       values: ['other.yaml']
     })
 
