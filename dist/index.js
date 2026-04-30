@@ -32623,26 +32623,6 @@ var init_git_response_error = __esm({
   }
 });
 
-// src/lib/args/pathspec.ts
-function pathspec(...paths) {
-  const key = new String(paths);
-  cache.set(key, paths);
-  return key;
-}
-function isPathSpec(path) {
-  return path instanceof String && cache.has(path);
-}
-function toPaths(pathSpec) {
-  return cache.get(pathSpec) || [];
-}
-var cache;
-var init_pathspec = __esm({
-  "src/lib/args/pathspec.ts"() {
-    "use strict";
-    cache = /* @__PURE__ */ new WeakMap();
-  }
-});
-
 // src/lib/errors/git-construct-error.ts
 var GitConstructError;
 var init_git_construct_error = __esm({
@@ -32787,7 +32767,7 @@ function prefixedArray(input, prefix) {
   return output;
 }
 function bufferToString(input) {
-  return (Array.isArray(input) ? import_node_buffer.Buffer.concat(input) : input).toString("utf-8");
+  return (Array.isArray(input) ? Buffer.concat(input) : input).toString("utf-8");
 }
 function pick(source, properties) {
   const out = {};
@@ -32807,11 +32787,10 @@ function orVoid(input) {
   }
   return input;
 }
-var import_node_buffer, import_file_exists, NULL, NOOP, objectToString;
+var import_file_exists, NULL, NOOP, objectToString;
 var init_util = __esm({
   "src/lib/utils/util.ts"() {
     "use strict";
-    import_node_buffer = __nccwpck_require__(4573);
     import_file_exists = __nccwpck_require__(7117);
     init_argument_filters();
     NULL = "\0";
@@ -32829,7 +32808,7 @@ function filterType(input, filter, def) {
   return arguments.length > 2 ? def : void 0;
 }
 function filterPrimitives(input, omit) {
-  const type = isPathSpec(input) ? "string" : typeof input;
+  const type = (0, import_args_pathspec.isPathSpec)(input) ? "string" : typeof input;
   return /number|string|boolean/.test(type) && (!omit || !omit.includes(type));
 }
 function filterPlainObject(input) {
@@ -32838,11 +32817,11 @@ function filterPlainObject(input) {
 function filterFunction(input) {
   return typeof input === "function";
 }
-var filterArray, filterNumber, filterString, filterStringOrStringArray, filterHasLength;
+var import_args_pathspec, filterArray, filterNumber, filterString, filterStringOrStringArray, filterHasLength;
 var init_argument_filters = __esm({
   "src/lib/utils/argument-filters.ts"() {
     "use strict";
-    init_pathspec();
+    import_args_pathspec = __nccwpck_require__(6632);
     init_util();
     filterArray = (input) => {
       return Array.isArray(input);
@@ -32851,7 +32830,7 @@ var init_argument_filters = __esm({
       return typeof input === "number";
     };
     filterString = (input) => {
-      return typeof input === "string" || isPathSpec(input);
+      return typeof input === "string" || (0, import_args_pathspec.isPathSpec)(input);
     };
     filterStringOrStringArray = (input) => {
       return filterString(input) || Array.isArray(input) && input.every(filterString);
@@ -32982,7 +32961,7 @@ function appendTaskOptions(options, commands = []) {
   }
   return Object.keys(options).reduce((commands2, key) => {
     const value = options[key];
-    if (isPathSpec(value)) {
+    if ((0, import_args_pathspec2.isPathSpec)(value)) {
       commands2.push(value);
     } else if (filterPrimitives(value, ["boolean"])) {
       commands2.push(key + "=" + value);
@@ -33023,12 +33002,13 @@ function trailingFunctionArgument(args, includeNoop = true) {
   const callback = asFunction(last(args));
   return includeNoop || isUserFunction(callback) ? callback : void 0;
 }
+var import_args_pathspec2;
 var init_task_options = __esm({
   "src/lib/utils/task-options.ts"() {
     "use strict";
     init_argument_filters();
     init_util();
-    init_pathspec();
+    import_args_pathspec2 = __nccwpck_require__(6632);
   }
 });
 
@@ -33715,12 +33695,13 @@ __export(api_exports, {
   ResetMode: () => ResetMode,
   TaskConfigurationError: () => TaskConfigurationError,
   grepQueryBuilder: () => grepQueryBuilder,
-  pathspec: () => pathspec
+  pathspec: () => import_args_pathspec3.pathspec
 });
+var import_args_pathspec3;
 var init_api = __esm({
   "src/lib/api.ts"() {
     "use strict";
-    init_pathspec();
+    import_args_pathspec3 = __nccwpck_require__(6632);
     init_git_construct_error();
     init_git_error();
     init_git_plugin_error();
@@ -33768,83 +33749,25 @@ var init_abort_plugin = __esm({
 });
 
 // src/lib/plugins/block-unsafe-operations-plugin.ts
-function isConfigSwitch(arg) {
-  return typeof arg === "string" && arg.trim().toLowerCase() === "-c";
-}
-function isCloneUploadPackSwitch(char, arg) {
-  if (typeof arg !== "string" || !arg.includes(char)) {
-    return false;
-  }
-  const cleaned = arg.trim().replace(/\0/g, "");
-  return /^(--no)?-{1,2}[\dlsqvnobucj]+(\s|$)/.test(cleaned);
-}
-function preventConfigBuilder(config, setting, message = String(config)) {
-  const regex = typeof config === "string" ? new RegExp(`\\s*${config}`, "i") : config;
-  return function preventCommand(options, arg, next) {
-    if (options[setting] !== true && isConfigSwitch(arg) && regex.test(next)) {
-      throw new GitPluginError(
-        void 0,
-        "unsafe",
-        `Configuring ${message} is not permitted without enabling ${setting}`
-      );
-    }
-  };
-}
-function preventUploadPack(arg, method) {
-  if (/^\s*--(upload|receive)-pack/.test(arg)) {
-    throw new GitPluginError(
-      void 0,
-      "unsafe",
-      `Use of --upload-pack or --receive-pack is not permitted without enabling allowUnsafePack`
-    );
-  }
-  if (method === "clone" && isCloneUploadPackSwitch("u", arg)) {
-    throw new GitPluginError(
-      void 0,
-      "unsafe",
-      `Use of clone with option -u is not permitted without enabling allowUnsafePack`
-    );
-  }
-  if (method === "push" && /^\s*--exec\b/.test(arg)) {
-    throw new GitPluginError(
-      void 0,
-      "unsafe",
-      `Use of push with option --exec is not permitted without enabling allowUnsafePack`
-    );
-  }
-}
-function blockUnsafeOperationsPlugin({
-  allowUnsafePack = false,
-  ...options
-} = {}) {
+function blockUnsafeOperationsPlugin(options = {}) {
   return {
     type: "spawn.args",
-    action(args, context) {
-      args.forEach((current, index) => {
-        const next = index < args.length ? args[index + 1] : "";
-        allowUnsafePack || preventUploadPack(current, context.method);
-        preventUnsafeConfig.forEach((helper) => helper(options, current, next));
-      });
+    action(args, { env }) {
+      for (const vulnerability of (0, import_argv_parser.vulnerabilityCheck)(args, env)) {
+        if (options[vulnerability.category] !== true) {
+          throw new GitPluginError(void 0, "unsafe", vulnerability.message);
+        }
+      }
       return args;
     }
   };
 }
-var preventUnsafeConfig;
+var import_argv_parser;
 var init_block_unsafe_operations_plugin = __esm({
   "src/lib/plugins/block-unsafe-operations-plugin.ts"() {
     "use strict";
+    import_argv_parser = __nccwpck_require__(7202);
     init_git_plugin_error();
-    preventUnsafeConfig = [
-      preventConfigBuilder(
-        /^\s*protocol(.[a-z]+)?.allow/i,
-        "allowUnsafeProtocolOverride",
-        "protocol.allow"
-      ),
-      preventConfigBuilder("core.sshCommand", "allowUnsafeSshCommand"),
-      preventConfigBuilder("core.gitProxy", "allowUnsafeGitProxy"),
-      preventConfigBuilder("core.hooksPath", "allowUnsafeHooksPath"),
-      preventConfigBuilder("diff.external", "allowUnsafeDiffExternal")
-    ];
   }
 });
 
@@ -34208,13 +34131,13 @@ function suffixPathsPlugin() {
       }
       for (let i = 0; i < data.length; i++) {
         const param = data[i];
-        if (isPathSpec(param)) {
-          append2(toPaths(param));
+        if ((0, import_args_pathspec4.isPathSpec)(param)) {
+          append2((0, import_args_pathspec4.toPaths)(param));
           continue;
         }
         if (param === "--") {
           append2(
-            data.slice(i + 1).flatMap((item) => isPathSpec(item) && toPaths(item) || item)
+            data.slice(i + 1).flatMap((item) => (0, import_args_pathspec4.isPathSpec)(item) && (0, import_args_pathspec4.toPaths)(item) || item)
           );
           break;
         }
@@ -34224,10 +34147,11 @@ function suffixPathsPlugin() {
     }
   };
 }
+var import_args_pathspec4;
 var init_suffix_paths_plugin = __esm({
   "src/lib/plugins/suffix-paths.plugin.ts"() {
     "use strict";
-    init_pathspec();
+    import_args_pathspec4 = __nccwpck_require__(6632);
   }
 });
 
@@ -34449,11 +34373,10 @@ var init_git_executor_chain = __esm({
       }
       async attemptRemoteTask(task, logger) {
         const binary = this._plugins.exec("spawn.binary", "", pluginContext(task, task.commands));
-        const args = this._plugins.exec(
-          "spawn.args",
-          [...task.commands],
-          pluginContext(task, task.commands)
-        );
+        const args = this._plugins.exec("spawn.args", [...task.commands], {
+          ...pluginContext(task, task.commands),
+          env: { ...this.env }
+        });
         const raw = await this.gitResponse(
           task,
           binary,
@@ -35256,7 +35179,7 @@ function parseLogOptions(opt = {}, customArgs = []) {
     suffix.push(`${opt.from || ""}${rangeOperator}${opt.to || ""}`);
   }
   if (filterString(opt.file)) {
-    command.push("--follow", pathspec(opt.file));
+    command.push("--follow", (0, import_args_pathspec5.pathspec)(opt.file));
   }
   appendTaskOptions(userOptions(opt), command);
   return {
@@ -35294,12 +35217,12 @@ function log_default() {
     );
   }
 }
-var excludeOptions;
+var import_args_pathspec5, excludeOptions;
 var init_log = __esm({
   "src/lib/tasks/log.ts"() {
     "use strict";
     init_log_format();
-    init_pathspec();
+    import_args_pathspec5 = __nccwpck_require__(6632);
     init_parse_list_log_summary();
     init_utils();
     init_task();
@@ -36077,17 +36000,17 @@ function clone_default() {
     }
   };
 }
-var cloneTask, cloneMirrorTask;
+var import_args_pathspec6, cloneTask, cloneMirrorTask;
 var init_clone = __esm({
   "src/lib/tasks/clone.ts"() {
     "use strict";
     init_task();
     init_utils();
-    init_pathspec();
+    import_args_pathspec6 = __nccwpck_require__(6632);
     cloneTask = (repo, directory, customArgs) => {
       const commands = ["clone", ...customArgs];
-      filterString(repo) && commands.push(pathspec(repo));
-      filterString(directory) && commands.push(pathspec(directory));
+      filterString(repo) && commands.push((0, import_args_pathspec6.pathspec)(repo));
+      filterString(directory) && commands.push((0, import_args_pathspec6.pathspec)(directory));
       return straightThroughStringTask(commands);
     };
     cloneMirrorTask = (repo, directory, customArgs) => {
@@ -42071,7 +41994,6 @@ function defaultFactory (origin, opts) {
 
 class Agent extends DispatcherBase {
   constructor ({ factory = defaultFactory, maxRedirections = 0, connect, ...options } = {}) {
-    super()
 
     if (typeof factory !== 'function') {
       throw new InvalidArgumentError('factory must be a function.')
@@ -42084,6 +42006,8 @@ class Agent extends DispatcherBase {
     if (!Number.isInteger(maxRedirections) || maxRedirections < 0) {
       throw new InvalidArgumentError('maxRedirections must be a positive number')
     }
+
+    super(options)
 
     if (connect && typeof connect !== 'function') {
       connect = { ...connect }
@@ -44637,9 +44561,10 @@ class Client extends DispatcherBase {
     autoSelectFamilyAttemptTimeout,
     // h2
     maxConcurrentStreams,
-    allowH2
+    allowH2,
+    webSocket
   } = {}) {
-    super()
+    super({ webSocket })
 
     if (keepAlive !== undefined) {
       throw new InvalidArgumentError('unsupported keepAlive, use pipelining=0 instead')
@@ -45172,15 +45097,23 @@ const { kDestroy, kClose, kClosed, kDestroyed, kDispatch, kInterceptors } = __nc
 const kOnDestroyed = Symbol('onDestroyed')
 const kOnClosed = Symbol('onClosed')
 const kInterceptedDispatch = Symbol('Intercepted Dispatch')
+const kWebSocketOptions = Symbol('webSocketOptions')
 
 class DispatcherBase extends Dispatcher {
-  constructor () {
+  constructor (opts) {
     super()
 
     this[kDestroyed] = false
     this[kOnDestroyed] = null
     this[kClosed] = false
     this[kOnClosed] = []
+    this[kWebSocketOptions] = opts?.webSocket ?? {}
+  }
+
+  get webSocketOptions () {
+    return {
+      maxPayloadSize: this[kWebSocketOptions].maxPayloadSize ?? 128 * 1024 * 1024
+    }
   }
 
   get destroyed () {
@@ -45744,8 +45677,8 @@ const kRemoveClient = Symbol('remove client')
 const kStats = Symbol('stats')
 
 class PoolBase extends DispatcherBase {
-  constructor () {
-    super()
+  constructor (opts) {
+    super(opts)
 
     this[kQueue] = new FixedQueue()
     this[kClients] = []
@@ -46005,8 +45938,6 @@ class Pool extends PoolBase {
     allowH2,
     ...options
   } = {}) {
-    super()
-
     if (connections != null && (!Number.isFinite(connections) || connections < 0)) {
       throw new InvalidArgumentError('invalid connections')
     }
@@ -46030,6 +45961,8 @@ class Pool extends PoolBase {
         ...connect
       })
     }
+
+    super(options)
 
     this[kInterceptors] = options.interceptors?.Pool && Array.isArray(options.interceptors.Pool)
       ? options.interceptors.Pool
@@ -63846,40 +63779,35 @@ const tail = Buffer.from([0x00, 0x00, 0xff, 0xff])
 const kBuffer = Symbol('kBuffer')
 const kLength = Symbol('kLength')
 
-// Default maximum decompressed message size: 4 MB
-const kDefaultMaxDecompressedSize = 4 * 1024 * 1024
-
 class PerMessageDeflate {
   /** @type {import('node:zlib').InflateRaw} */
   #inflate
 
   #options = {}
 
-  /** @type {boolean} */
-  #aborted = false
-
-  /** @type {Function|null} */
-  #currentCallback = null
+  #maxPayloadSize = 0
 
   /**
    * @param {Map<string, string>} extensions
    */
-  constructor (extensions) {
+  constructor (extensions, options) {
     this.#options.serverNoContextTakeover = extensions.has('server_no_context_takeover')
     this.#options.serverMaxWindowBits = extensions.get('server_max_window_bits')
+
+    this.#maxPayloadSize = options.maxPayloadSize
   }
 
+  /**
+   * Decompress a compressed payload.
+   * @param {Buffer} chunk Compressed data
+   * @param {boolean} fin Final fragment flag
+   * @param {Function} callback Callback function
+   */
   decompress (chunk, fin, callback) {
     // An endpoint uses the following algorithm to decompress a message.
     // 1.  Append 4 octets of 0x00 0x00 0xff 0xff to the tail end of the
     //     payload of the message.
     // 2.  Decompress the resulting data using DEFLATE.
-
-    if (this.#aborted) {
-      callback(new MessageSizeExceededError())
-      return
-    }
-
     if (!this.#inflate) {
       let windowBits = Z_DEFAULT_WINDOWBITS
 
@@ -63902,23 +63830,12 @@ class PerMessageDeflate {
       this.#inflate[kLength] = 0
 
       this.#inflate.on('data', (data) => {
-        if (this.#aborted) {
-          return
-        }
-
         this.#inflate[kLength] += data.length
 
-        if (this.#inflate[kLength] > kDefaultMaxDecompressedSize) {
-          this.#aborted = true
+        if (this.#maxPayloadSize > 0 && this.#inflate[kLength] > this.#maxPayloadSize) {
+          callback(new MessageSizeExceededError())
           this.#inflate.removeAllListeners()
-          this.#inflate.destroy()
           this.#inflate = null
-
-          if (this.#currentCallback) {
-            const cb = this.#currentCallback
-            this.#currentCallback = null
-            cb(new MessageSizeExceededError())
-          }
           return
         }
 
@@ -63931,14 +63848,13 @@ class PerMessageDeflate {
       })
     }
 
-    this.#currentCallback = callback
     this.#inflate.write(chunk)
     if (fin) {
       this.#inflate.write(tail)
     }
 
     this.#inflate.flush(() => {
-      if (this.#aborted || !this.#inflate) {
+      if (!this.#inflate) {
         return
       }
 
@@ -63946,7 +63862,6 @@ class PerMessageDeflate {
 
       this.#inflate[kBuffer].length = 0
       this.#inflate[kLength] = 0
-      this.#currentCallback = null
 
       callback(null, full)
     })
@@ -63982,6 +63897,7 @@ const {
 const { WebsocketFrameSend } = __nccwpck_require__(3264)
 const { closeWebSocketConnection } = __nccwpck_require__(6897)
 const { PerMessageDeflate } = __nccwpck_require__(9469)
+const { MessageSizeExceededError } = __nccwpck_require__(8707)
 
 // This code was influenced by ws released under the MIT license.
 // Copyright (c) 2011 Einar Otto Stangvik <einaros@gmail.com>
@@ -63990,6 +63906,7 @@ const { PerMessageDeflate } = __nccwpck_require__(9469)
 
 class ByteParser extends Writable {
   #buffers = []
+  #fragmentsBytes = 0
   #byteOffset = 0
   #loop = false
 
@@ -64001,18 +63918,23 @@ class ByteParser extends Writable {
   /** @type {Map<string, PerMessageDeflate>} */
   #extensions
 
+  /** @type {number} */
+  #maxPayloadSize
+
   /**
    * @param {import('./websocket').WebSocket} ws
    * @param {Map<string, string>|null} extensions
+   * @param {{ maxPayloadSize?: number }} [options]
    */
-  constructor (ws, extensions) {
+  constructor (ws, extensions, options = {}) {
     super()
 
     this.ws = ws
     this.#extensions = extensions == null ? new Map() : extensions
+    this.#maxPayloadSize = options.maxPayloadSize ?? 0
 
     if (this.#extensions.has('permessage-deflate')) {
-      this.#extensions.set('permessage-deflate', new PerMessageDeflate(extensions))
+      this.#extensions.set('permessage-deflate', new PerMessageDeflate(extensions, options))
     }
   }
 
@@ -64026,6 +63948,19 @@ class ByteParser extends Writable {
     this.#loop = true
 
     this.run(callback)
+  }
+
+  #validatePayloadLength () {
+    if (
+      this.#maxPayloadSize > 0 &&
+      !isControlFrame(this.#info.opcode) &&
+      this.#info.payloadLength > this.#maxPayloadSize
+    ) {
+      failWebsocketConnection(this.ws, 'Payload size exceeds maximum allowed size')
+      return false
+    }
+
+    return true
   }
 
   /**
@@ -64116,6 +64051,10 @@ class ByteParser extends Writable {
         if (payloadLength <= 125) {
           this.#info.payloadLength = payloadLength
           this.#state = parserStates.READ_DATA
+
+          if (!this.#validatePayloadLength()) {
+            return
+          }
         } else if (payloadLength === 126) {
           this.#state = parserStates.PAYLOADLENGTH_16
         } else if (payloadLength === 127) {
@@ -64140,6 +64079,10 @@ class ByteParser extends Writable {
 
         this.#info.payloadLength = buffer.readUInt16BE(0)
         this.#state = parserStates.READ_DATA
+
+        if (!this.#validatePayloadLength()) {
+          return
+        }
       } else if (this.#state === parserStates.PAYLOADLENGTH_64) {
         if (this.#byteOffset < 8) {
           return callback()
@@ -64162,6 +64105,10 @@ class ByteParser extends Writable {
 
         this.#info.payloadLength = lower
         this.#state = parserStates.READ_DATA
+
+        if (!this.#validatePayloadLength()) {
+          return
+        }
       } else if (this.#state === parserStates.READ_DATA) {
         if (this.#byteOffset < this.#info.payloadLength) {
           return callback()
@@ -64174,42 +64121,53 @@ class ByteParser extends Writable {
           this.#state = parserStates.INFO
         } else {
           if (!this.#info.compressed) {
-            this.#fragments.push(body)
+            this.writeFragments(body)
+
+            if (this.#maxPayloadSize > 0 && this.#fragmentsBytes > this.#maxPayloadSize) {
+              failWebsocketConnection(this.ws, new MessageSizeExceededError().message)
+              return
+            }
 
             // If the frame is not fragmented, a message has been received.
             // If the frame is fragmented, it will terminate with a fin bit set
             // and an opcode of 0 (continuation), therefore we handle that when
             // parsing continuation frames, not here.
             if (!this.#info.fragmented && this.#info.fin) {
-              const fullMessage = Buffer.concat(this.#fragments)
-              websocketMessageReceived(this.ws, this.#info.binaryType, fullMessage)
-              this.#fragments.length = 0
+              websocketMessageReceived(this.ws, this.#info.binaryType, this.consumeFragments())
             }
 
             this.#state = parserStates.INFO
           } else {
-            this.#extensions.get('permessage-deflate').decompress(body, this.#info.fin, (error, data) => {
-              if (error) {
-                failWebsocketConnection(this.ws, error.message)
-                return
-              }
+            this.#extensions.get('permessage-deflate').decompress(
+              body,
+              this.#info.fin,
+              (error, data) => {
+                if (error) {
+                  failWebsocketConnection(this.ws, error.message)
+                  return
+                }
 
-              this.#fragments.push(data)
+                this.writeFragments(data)
 
-              if (!this.#info.fin) {
-                this.#state = parserStates.INFO
+                if (this.#maxPayloadSize > 0 && this.#fragmentsBytes > this.#maxPayloadSize) {
+                  failWebsocketConnection(this.ws, new MessageSizeExceededError().message)
+                  return
+                }
+
+                if (!this.#info.fin) {
+                  this.#state = parserStates.INFO
+                  this.#loop = true
+                  this.run(callback)
+                  return
+                }
+
+                websocketMessageReceived(this.ws, this.#info.binaryType, this.consumeFragments())
+
                 this.#loop = true
+                this.#state = parserStates.INFO
                 this.run(callback)
-                return
               }
-
-              websocketMessageReceived(this.ws, this.#info.binaryType, Buffer.concat(this.#fragments))
-
-              this.#loop = true
-              this.#state = parserStates.INFO
-              this.#fragments.length = 0
-              this.run(callback)
-            })
+            )
 
             this.#loop = false
             break
@@ -64259,6 +64217,26 @@ class ByteParser extends Writable {
     this.#byteOffset -= n
 
     return buffer
+  }
+
+  writeFragments (fragment) {
+    this.#fragmentsBytes += fragment.length
+    this.#fragments.push(fragment)
+  }
+
+  consumeFragments () {
+    const fragments = this.#fragments
+
+    if (fragments.length === 1) {
+      this.#fragmentsBytes = 0
+      return fragments.shift()
+    }
+
+    const output = Buffer.concat(fragments, this.#fragmentsBytes)
+    this.#fragments = []
+    this.#fragmentsBytes = 0
+
+    return output
   }
 
   parseCloseBody (data) {
@@ -65296,7 +65274,11 @@ class WebSocket extends EventTarget {
     // once this happens, the connection is open
     this[kResponse] = response
 
-    const parser = new ByteParser(this, parsedExtensions)
+    const maxPayloadSize = this[kController]?.dispatcher?.webSocketOptions?.maxPayloadSize
+
+    const parser = new ByteParser(this, parsedExtensions, {
+      maxPayloadSize
+    })
     parser.on('drain', onParserDrain)
     parser.on('error', onParserError.bind(this))
 
@@ -76348,6 +76330,26 @@ function replaceNode(key, path, node) {
 
 exports.visit = visit;
 exports.visitAsync = visitAsync;
+
+
+/***/ }),
+
+/***/ 6632:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const e=new WeakMap;function c(...t){const n=new String(t);return e.set(n,t),n}function o(t){return t instanceof String&&e.has(t)}function r(t){return e.get(t)??[]}exports.isPathSpec=o;exports.pathspec=c;exports.toPaths=r;
+//# sourceMappingURL=index.cjs.map
+
+
+/***/ }),
+
+/***/ 7202:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});const h=__nccwpck_require__(6632);function*v(e,t){const n=t==="global";for(const o of e)o.isGlobal===n&&(yield o)}const S=new Set(["--add","--edit","--remove-section","--rename-section","--replace-all","--unset","--unset-all","-e"]),P=new Set(["--get","--get-all","--get-color","--get-colorbool","--get-regexp","--get-urlmatch","--list","-l"]),E=new Set(["edit","remove-section","rename-section","set","unset"]),A=new Set(["get","get-color","get-colorbool","list"]);function F(e,t){for(const{name:o}of v(e,"task")){if(S.has(o))return p(!0,t);if(P.has(o))return p(!1,t)}const n=t.at(0)?.toLowerCase();return n===void 0?null:E.has(n)?p(!0,t.slice(1)):A.has(n)?p(!1,t.slice(1)):t.length===1?p(!1,t):p(!0,t)}function p(e=!1,t=[]){const n=t.at(0)?.toLowerCase();return n===void 0?null:{isWrite:e,isRead:!e,key:n,value:t.at(1)}}function M(e,t){return t.isWrite&&t.value!==void 0?{key:t.key,value:t.value,scope:e}:{key:t.key,scope:e}}function N(e){const t=e?.indexOf("=")||-1;return!e||t<0?null:{key:e.slice(0,t).trim().toLowerCase(),value:e.slice(t+1)}}function O(e){for(const{name:t}of v(e,"task"))switch(t){case"--global":return"global";case"--system":return"system";case"--worktree":return"worktree";case"--local":return"local";case"--file":case"-f":return"file"}return"local"}function G({name:e}){if(e==="-c"||e==="--config")return"inline";if(e==="--config-env")return"env"}function*L(e){for(const t of e){const n=G(t),o=n&&N(t.value);o&&(yield{...o,scope:n})}}function $(e,t,n){const o={read:[],write:[...L(t)]};return e==="config"&&D(o,O(t),F(t,n)),o}function D(e,t,n){if(n===null)return;const o=M(t,n);n.isWrite?e.write.push(o):e.read.push(o)}const U={short:new Map([["c",!0]])},T={short:new Map([["C",!0],["P",!1],["h",!1],["p",!1],["v",!1],...U.short.entries()]),long:new Set(["attr-source","config-env","exec-path","git-dir","list-cmds","namespace","super-prefix","work-tree"])},R={clone:{short:new Map([["b",!0],["j",!0],["l",!1],["n",!1],["o",!0],["q",!1],["s",!1],["u",!0]]),long:new Set(["branch","config","jobs","origin","upload-pack","u","template"])},commit:{short:new Map([["C",!0],["F",!0],["c",!0],["m",!0],["t",!0]]),long:new Set(["file","message","reedit-message","reuse-message","template"])},config:{short:new Map([["e",!1],["f",!0],["l",!1]]),long:new Set(["blob","comment","default","file","type","value"])},fetch:{short:new Map,long:new Set(["upload-pack"])},init:{short:new Map,long:new Set(["template"])},pull:{short:new Map,long:new Set(["upload-pack"])},push:{short:new Map,long:new Set(["exec","receive-pack"])}},I={short:new Map,long:new Set};function j(e){const t=R[e??""]??I;return{short:new Map([...U.short.entries(),...t.short.entries()]),long:t.long}}function b(e,t=T){if(e.startsWith("--")){const n=e.indexOf("=");if(n>2)return[{name:e.slice(0,n),value:e.slice(n+1),needsNext:!1}];const o=e.slice(2);return[{name:e,needsNext:t.long.has(o)}]}if(e.length===2){const n=e.charAt(1),o=t.short.get(n);return[{name:e,needsNext:o===!0}]}return W(e,t.short)}function W(e,t){const n=e.slice(1).split(""),o=[];for(let s=0;s<n.length;s++){const r=n[s],a=t.get(r);if(a===void 0)return[{name:e,needsNext:!1}];if(a){const l=n.slice(s+1).join("");if(l&&![...l].every(m=>t.has(m)))return o.push({name:`-${r}`,value:l,needsNext:!1}),o}o.push({name:`-${r}`,needsNext:a})}return o}function B(e,t=[]){let n=0;for(;n<e.length;){const o=String(e[n]);if(!o.startsWith("-")||o.length<2)break;const s=b(o);let r=n+1;for(const a of s){const l={name:a.name,value:a.value,absorbedNext:!1,isGlobal:!0};a.needsNext&&l.value===void 0&&r<e.length&&(l.value=String(e[r]),l.absorbedNext=!0,r++),t.push(l)}n=r}return{flags:t,taskIndex:n}}function q(e,t,n=[]){const o=j(t),s=[],r=[];let a=0;for(;a<e.length;){const l=e[a];if(h.isPathSpec(l)){r.push(...h.toPaths(l)),a++;continue}const f=String(l);if(f==="--"){for(let g=a+1;g<e.length;g++){const u=e[g];h.isPathSpec(u)?r.push(...h.toPaths(u)):r.push(String(u))}break}if(!f.startsWith("-")||f.length<2){s.push(f),a++;continue}const m=b(f,o);let d=a+1;for(const g of m){const u={name:g.name,value:g.value,absorbedNext:!1,isGlobal:!1};g.needsNext&&u.value===void 0&&d<e.length&&!h.isPathSpec(e[d])&&(u.value=String(e[d]),u.absorbedNext=!0,d++),n.push(u)}a=d}return{flags:n,positionals:s,pathspecs:r}}function*V({write:e}){for(const t of e)for(const n of K){const o=n(t.key);o&&(yield o)}}function c(e,t,n=String(e)){const o=typeof e=="string"?new RegExp(`\\s*${e.toLowerCase()}`):e;return function(r){if(o.test(r))return{category:t,message:`Configuring ${n} is not permitted without enabling ${t}`}}}function i(e,t){const n=new RegExp(`\\s*${e.toLowerCase().replace(/\./g,"(..+)?.")}`);return c(n,t,e)}const K=[c("alias","allowUnsafeAlias"),c("core.askPass","allowUnsafeAskPass"),c("core.editor","allowUnsafeEditor"),c("core.fsmonitor","allowUnsafeFsMonitor"),c("core.gitProxy","allowUnsafeGitProxy"),c("core.hooksPath","allowUnsafeHooksPath"),c("core.pager","allowUnsafePager"),c("core.sshCommand","allowUnsafeSshCommand"),i("credential.helper","allowUnsafeCredentialHelper"),i("diff.command","allowUnsafeDiffExternal"),c("diff.external","allowUnsafeDiffExternal"),i("diff.textconv","allowUnsafeDiffTextConv"),i("filter.clean","allowUnsafeFilter"),i("filter.smudge","allowUnsafeFilter"),i("gpg.program","allowUnsafeGpgProgram"),c("init.templateDir","allowUnsafeTemplateDir"),i("merge.driver","allowUnsafeMergeDriver"),i("mergetool.path","allowUnsafeMergeDriver"),i("mergetool.cmd","allowUnsafeMergeDriver"),i("protocol.allow","allowUnsafeProtocolOverride"),i("remote.receivepack","allowUnsafePack"),i("remote.uploadpack","allowUnsafePack"),c("sequence.editor","allowUnsafeEditor")];function*H(e,t){for(const n of t)for(const o of Y){const s=o(e,n.name);s&&(yield s)}}function w(e,t,n,o=String(t)){const s=typeof t=="string"?new RegExp(`\\s*${t.toLowerCase()}`):t,r=`Use of ${e?`${e} with option `:""}${o} is not permitted without enabling ${n}`;return function(l,f){if((!e||l===e)&&s.test(f))return{category:n,message:r}}}const Y=[w(null,/--(upload|receive)-pack/,"allowUnsafePack","--upload-pack or --receive-pack"),w("clone",/^-\w*u/,"allowUnsafePack"),w("clone","--u","allowUnsafePack"),w("push","--exec","allowUnsafePack"),w(null,"--template","allowUnsafeTemplateDir")];function C(e,t,n){return[...H(e,t),...V(n)]}function x(...e){const{flags:t,taskIndex:n}=B(e),o=n<e.length?String(e[n]).toLowerCase():null,s=o!==null?e.slice(n+1):[],{positionals:r,pathspecs:a}=q(s,o,t),l=$(o,t,r);return{task:o,flags:t.map(J),paths:a,config:l,vulnerabilities:z(C(o,t,l))}}function z(e){return Object.defineProperty(e,"vulnerabilities",{value:e})}function J({value:e,name:t}){return e!==void 0?{name:t,value:e}:{name:t}}const y={editor:"allowUnsafeEditor",git_askpass:"allowUnsafeAskPass",git_config_global:"allowUnsafeConfigPaths",git_config_system:"allowUnsafeConfigPaths",git_config_count:"allowUnsafeConfigEnvCount",git_config:"allowUnsafeConfigPaths",git_editor:"allowUnsafeEditor",git_exec_path:"allowUnsafeConfigPaths",git_external_diff:"allowUnsafeDiffExternal",git_pager:"allowUnsafePager",git_proxy_command:"allowUnsafeGitProxy",git_template_dir:"allowUnsafeTemplateDir",git_sequence_editor:"allowUnsafeEditor",git_ssh:"allowUnsafeSshCommand",git_ssh_command:"allowUnsafeSshCommand",pager:"allowUnsafePager",prefix:"allowUnsafeConfigPaths",ssh_askpass:"allowUnsafeAskPass"};function*Q(e){const t=parseInt(e.git_config_count??"0",10);for(let n=0;n<t;n++){const o=e[`git_config_key_${n}`],s=e[`git_config_value_${n}`];o!==void 0&&(yield{key:o.toLowerCase().trim(),value:s,scope:"env"})}}function*X(e){for(const t of Object.keys(e))if(k(t)){const n=y[t];yield{category:n,message:`Use of "${t.toUpperCase()}" is not permitted without enabling ${n}`}}}function k(e){return Object.hasOwn(y,e)}function Z(e){const t={};for(const[n,o]of Object.entries(e)){const s=n.toLowerCase().trim();(k(s)||s.startsWith("git"))&&(t[s]=String(o))}return t}function _(e){const t=Z(e),n={read:[],write:[...Q(t)]},o=[...X(t),...C(null,[],n)];return{config:n,vulnerabilities:o}}function ee(e,t){return[...x(...e).vulnerabilities,..._(t).vulnerabilities]}exports.parseArgv=x;exports.parseEnv=_;exports.vulnerabilityCheck=ee;
+//# sourceMappingURL=index.cjs.map
 
 
 /***/ })
