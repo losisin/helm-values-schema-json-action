@@ -5,7 +5,9 @@
 [![Static Badge](https://img.shields.io/badge/licence%20-%20MIT-green)](https://github.com/losisin/helm-values-schema-json-action/blob/main/LICENSE)
 [![GitHub release (with filter)](https://img.shields.io/github/v/release/losisin/helm-values-schema-json-action)](https://github.com/losisin/helm-values-schema-json-action/releases)
 
-A GitHub action to generate values schema json file by using helm plugin [helm-values-schema-json](https://github.com/losisin/helm-values-schema-json). It always uses latetst version of the plugin.
+A GitHub action to generate values schema json file by using helm plugin
+[helm-values-schema-json](https://github.com/losisin/helm-values-schema-json).
+It always uses latetst version of the plugin.
 
 ## Usage
 
@@ -28,42 +30,43 @@ jobs:
           values: values.yaml
 ```
 
-> [!NOTE]
-> This will only generate json schema but no further action will be taken.
+> [!NOTE] This will only generate json schema but no further action will be
+> taken.
 
 ## Inputs
 
-| Name | Description | Default | Required |
-|------|-------------|---------|----------|
-| `values` | Single or comma-separated list of yaml files provided as input or in `.schema.yaml` | `''` | false |
-| `draft` | Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020 | `2020` | false |
-| `output` | Output filename with path to store the generated schema | `values.schema.json` | false |
-| `indent` | Indentation spaces (even number) | `4` | false |
-| `id` | ID of the schema | `''` | false |
-| `ref` | URI reference of the schema. Relative to CWD when using `bundle` | `''` | false |
-| `title` | Title of the schema | `''` | false |
-| `description` | Description of the schema | `''` | false |
-| `additionalProperties` | Additional properties allowed in the schema (bool) | `''` | false |
-| `noAdditionalProperties` | Additional properties allowed in the schema, including child objects (bool) | `''` | false |
-| `git-push` | If true it will commit and push the changes (ignored if `fail-on-diff` is set) | `false` | false |
-| `git-push-user-name` | If empty the name of the GitHub Actions bot will be used | `github-actions[bot]` | false |
-| `git-push-user-email` | If empty the no-reply email of the GitHub Actions bot will be used | `github-actions[bot]@users.noreply.github.com` | false |
-| `git-commit-message` | Commit message | `update values.schema.json` | false |
-| `fail-on-diff` | Fail the job if there is any diff found between the generated output and existing file | `false` | false |
-| `working-directory` | Working directory where the schema command should run. Useful when using configuration file `.schema.yaml`. | `'.'` | false |
-| `useHelmDocs` | Read description from helm-docs comments | `false` | false |
+| Name                     | Description                                                                                                 | Default                                        | Required |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | -------- |
+| `values`                 | Single or comma-separated list of yaml files provided as input or in `.schema.yaml`                         | `''`                                           | false    |
+| `draft`                  | Draft version of the schema. Accepted values are 4, 6, 7, 2019 and 2020                                     | `2020`                                         | false    |
+| `output`                 | Output filename with path to store the generated schema                                                     | `values.schema.json`                           | false    |
+| `indent`                 | Indentation spaces (even number)                                                                            | `4`                                            | false    |
+| `id`                     | ID of the schema                                                                                            | `''`                                           | false    |
+| `ref`                    | URI reference of the schema. Relative to CWD when using `bundle`                                            | `''`                                           | false    |
+| `title`                  | Title of the schema                                                                                         | `''`                                           | false    |
+| `description`            | Description of the schema                                                                                   | `''`                                           | false    |
+| `additionalProperties`   | Additional properties allowed in the schema (bool)                                                          | `''`                                           | false    |
+| `noAdditionalProperties` | Additional properties allowed in the schema, including child objects (bool)                                 | `''`                                           | false    |
+| `git-push`               | If true it will commit and push the changes (ignored if `fail-on-diff` is set)                              | `false`                                        | false    |
+| `git-push-user-name`     | If empty the name of the GitHub Actions bot will be used                                                    | `github-actions[bot]`                          | false    |
+| `git-push-user-email`    | If empty the no-reply email of the GitHub Actions bot will be used                                          | `github-actions[bot]@users.noreply.github.com` | false    |
+| `git-commit-message`     | Commit message                                                                                              | `update values.schema.json`                    | false    |
+| `fail-on-diff`           | Fail the job if there is any diff found between the generated output and existing file                      | `false`                                        | false    |
+| `working-directory`      | Working directory where the schema command should run. Useful when using configuration file `.schema.yaml`. | `'.'`                                          | false    |
+| `useHelmDocs`            | Read description from helm-docs comments                                                                    | `false`                                        | false    |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
+| Name          | Description                           |
+| ------------- | ------------------------------------- |
 | `plugin-path` | Path to the cached JSON schema binary |
 
 ## Examples
 
 ### Fail on diff
 
-To fail the workflow if there is a diff between the generated schema and the committed one, add the following step to your workflow:
+To fail the workflow if there is a diff between the generated schema and the
+committed one, add the following step to your workflow:
 
 ```yaml
 name: Generate values schema json
@@ -85,10 +88,10 @@ jobs:
 
 ### Auto commit generated schema
 
-> [!NOTE]
-> This options are ignored if `fail-on-diff: true`.
+> [!NOTE] This options are ignored if `fail-on-diff: true`.
 
-To automatically commit the generated schema, add the following step to your workflow:
+To automatically commit the generated schema, add the following step to your
+workflow:
 
 ```yaml
 name: Generate values schema json
@@ -108,7 +111,8 @@ jobs:
           git-push: true
 ```
 
-To overwrite default user and email which is set to `github-actions[bot]` and add custom commit message, add the following:
+To overwrite default user and email which is set to `github-actions[bot]` and
+add custom commit message, add the following:
 
 ```yaml
 name: Generate values schema json
@@ -133,7 +137,8 @@ jobs:
 
 ### Generate json schema from multiple files
 
-You can generate schema from mutiple yaml files with values by passing comma separated list to `input` parameter.
+You can generate schema from mutiple yaml files with values by passing comma
+separated list to `input` parameter.
 
 ```yaml
 name: Generate values schema json
@@ -197,11 +202,17 @@ jobs:
 
 ## Issues, Features, Feedback
 
-Your input matters. Feel free to open [issues](https://github.com/losisin/helm-values-schema-json-action/issues) for bugs, feature requests, or any feedback you may have. Check if a similar issue exists before creating a new one, and please use clear titles and explanations to help understand your point better. Your thoughts help me improve this project!
+Your input matters. Feel free to open
+[issues](https://github.com/losisin/helm-values-schema-json-action/issues) for
+bugs, feature requests, or any feedback you may have. Check if a similar issue
+exists before creating a new one, and please use clear titles and explanations
+to help understand your point better. Your thoughts help me improve this
+project!
 
 ### How to Contribute
 
-🌟 Thank you for considering contributing to my project! Your efforts are incredibly valuable. To get started:
+🌟 Thank you for considering contributing to my project! Your efforts are
+incredibly valuable. To get started:
 
 1. Fork the repository.
 2. Create your feature branch: `git checkout -b feature/YourFeature`
