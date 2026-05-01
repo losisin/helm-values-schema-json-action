@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { installPlugin } from './install'
+import { installPlugin } from './install.js'
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import { simpleGit } from 'simple-git'
