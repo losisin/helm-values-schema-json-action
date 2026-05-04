@@ -7,7 +7,7 @@
 import * as path from 'path'
 import type { Stats } from 'fs'
 import * as util from 'util'
-import { jest } from '@jest/globals'
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import * as fs from '../__fixtures__/fs.js'
 import * as os from '../__fixtures__/os.js'
 import * as tc from '../__fixtures__/tool-cache.js'

@@ -3,7 +3,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "types": ["node", "jest"]
   },
   "include": ["src/**/*", "__tests__/**/*", "__fixtures__/**/*"],
   "exclude": ["coverage", "dist", "node_modules"]

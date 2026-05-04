@@ -5,7 +5,14 @@
  * registered with jest.unstable_mockModule before the module under test is
  * imported dynamically.
  */
-import { jest } from '@jest/globals'
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest
+} from '@jest/globals'
 import type { SpiedFunction } from 'jest-mock'
 import type { FileStatusResult, SimpleGit, StatusResult } from 'simple-git'
 import * as core from '../__fixtures__/core.js'
