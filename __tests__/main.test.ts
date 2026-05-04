@@ -213,7 +213,7 @@ describe('run function', () => {
 
     await run()
 
-    expect(installMod.installPlugin).toHaveBeenCalledWith('v2.3.1')
+    expect(installMod.installPlugin).toHaveBeenCalledWith('v2.4.0')
     expect(core.getInput).toHaveBeenCalledWith('values')
     expect(core.getInput).toHaveBeenCalledWith('draft')
     expect(core.getInput).toHaveBeenCalledWith('output')
