@@ -44,7 +44,7 @@
     "@actions/exec": "^3.0.0",
     "@actions/tool-cache": "^3.0.1",
     "simple-git": "^3.36.0",
-    "yaml": "^2.8.3"
+    "yaml": "^2.8.4"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.5",
@@ -58,7 +58,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^8.59.1",
-    "eslint": "^10.2.1",
+    "eslint": "^10.3.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-jest": "^29.15.2",
     "eslint-plugin-prettier": "^5.5.5",
@@ -68,7 +68,7 @@
     "rollup": "^4.60.2",
     "ts-jest": "^29.4.9",
     "ts-jest-resolver": "^2.0.1",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   },
   "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "*"
