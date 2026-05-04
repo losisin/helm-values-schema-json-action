@@ -1,7 +1,7 @@
 /**
  * Unit tests for the action's entrypoint, src/index.ts
  */
-import { jest } from '@jest/globals'
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 
 describe('index.ts', () => {
   beforeEach(() => {
