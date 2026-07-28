@@ -303,12 +303,72 @@ describe('run function', () => {
     const inputMap: { [key: string]: string } = {
       'working-directory': 'test/path'
     }
-    core.getInput.mockImplementation((name: string) => inputMap[name])
+    core.getInput.mockImplementation((name: string) => inputMap[name] || '')
 
     await run()
 
     expect(exec.exec).toHaveBeenCalledTimes(1)
     expect(fsp.readFile).toHaveBeenCalledWith('.schema.yaml', 'utf8')
+  })
+
+  it('should prefer .schema.yaml over hardcoded defaults for k8s schema options', async () => {
+    fsp.readFile.mockResolvedValue(
+      [
+        'k8sSchemaVersion: v1.35.0',
+        'k8sSchemaURL: https://example.com/{{ .K8sSchemaVersion }}/',
+        'bundle: true',
+        'bundleRoot: charts',
+        'bundleWithoutID: true'
+      ].join('\n')
+    )
+    installMod.installPlugin.mockResolvedValue('/mocked/path')
+    core.getInput.mockImplementation(() => '')
+
+    const gitMock = {
+      status: jest
+        .fn<() => Promise<StatusResult>>()
+        .mockResolvedValue(mockStatusResult([]))
+    } as unknown as jest.Mocked<SimpleGit>
+    simpleGitModule.simpleGit.mockReturnValue(gitMock)
+
+    await run()
+
+    expect(exec.exec).toHaveBeenCalledWith(
+      'schema',
+      expect.arrayContaining([
+        '--k8s-schema-version=v1.35.0',
+        '--k8s-schema-url=https://example.com/{{ .K8sSchemaVersion }}/',
+        '--bundle=true',
+        '--bundle-root=charts',
+        '--bundle-without-id=true'
+      ])
+    )
+  })
+
+  it('should prefer action inputs over .schema.yaml for k8s schema options', async () => {
+    fsp.readFile.mockResolvedValue(
+      ['k8sSchemaVersion: v1.35.0', 'bundle: true'].join('\n')
+    )
+    installMod.installPlugin.mockResolvedValue('/mocked/path')
+    const inputMap: { [key: string]: string } = {
+      'k8s-schema-version': 'v1.34.0',
+      bundle: 'false'
+    }
+    core.getInput.mockImplementation((name: string) => inputMap[name] || '')
+
+    const gitMock = {
+      status: jest
+        .fn<() => Promise<StatusResult>>()
+        .mockResolvedValue(mockStatusResult([]))
+    } as unknown as jest.Mocked<SimpleGit>
+    simpleGitModule.simpleGit.mockReturnValue(gitMock)
+
+    await run()
+
+    expect(exec.exec).toHaveBeenCalledWith(
+      'schema',
+      expect.arrayContaining(['--k8s-schema-version=v1.34.0', '--bundle=false'])
+    )
   })
 
   it('should not add cached path to PATH when already present', async () => {

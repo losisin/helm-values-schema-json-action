@@ -80,15 +80,22 @@ export async function run(): Promise<void> {
     const gitPushUserEmail = core.getInput('git-push-user-email')
     const gitCommitMessage = core.getInput('git-commit-message')
     const failOnDiff = core.getInput('fail-on-diff')
-    const bundle = core.getInput('bundle') || configFile.bundle?.toString()
-    const bundleRoot = core.getInput('bundle-root') || configFile.bundleRoot
+    const bundle =
+      core.getInput('bundle') || configFile.bundle?.toString() || 'false'
+    const bundleRoot =
+      core.getInput('bundle-root') || configFile.bundleRoot || '.'
     const bundleWithoutID =
       core.getInput('bundle-without-id') ||
-      configFile.bundleWithoutID?.toString()
+      configFile.bundleWithoutID?.toString() ||
+      'false'
     const k8sSchemaVersion =
-      core.getInput('k8s-schema-version') || configFile.k8sSchemaVersion
+      core.getInput('k8s-schema-version') ||
+      configFile.k8sSchemaVersion ||
+      'v1.33.1'
     const k8sSchemaURL =
-      core.getInput('k8s-schema-url') || configFile.k8sSchemaURL
+      core.getInput('k8s-schema-url') ||
+      configFile.k8sSchemaURL ||
+      'https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/{{ .K8sSchemaVersion }}/'
     const useHelmDocs =
       core.getInput('useHelmDocs') || configFile.useHelmDocs?.toString()
 
