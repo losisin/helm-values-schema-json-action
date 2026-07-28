@@ -46681,12 +46681,17 @@ async function run() {
         const gitPushUserEmail = getInput('git-push-user-email');
         const gitCommitMessage = getInput('git-commit-message');
         const failOnDiff = getInput('fail-on-diff');
-        const bundle = getInput('bundle') || configFile.bundle?.toString();
-        const bundleRoot = getInput('bundle-root') || configFile.bundleRoot;
+        const bundle = getInput('bundle') || configFile.bundle?.toString() || 'false';
+        const bundleRoot = getInput('bundle-root') || configFile.bundleRoot || '.';
         const bundleWithoutID = getInput('bundle-without-id') ||
-            configFile.bundleWithoutID?.toString();
-        const k8sSchemaVersion = getInput('k8s-schema-version') || configFile.k8sSchemaVersion;
-        const k8sSchemaURL = getInput('k8s-schema-url') || configFile.k8sSchemaURL;
+            configFile.bundleWithoutID?.toString() ||
+            'false';
+        const k8sSchemaVersion = getInput('k8s-schema-version') ||
+            configFile.k8sSchemaVersion ||
+            'v1.33.1';
+        const k8sSchemaURL = getInput('k8s-schema-url') ||
+            configFile.k8sSchemaURL ||
+            'https://raw.githubusercontent.com/yannh/kubernetes-json-schema/refs/heads/master/{{ .K8sSchemaVersion }}/';
         const useHelmDocs = getInput('useHelmDocs') || configFile.useHelmDocs?.toString();
         startGroup(`Downloading JSON schema ${version}`);
         const cachedPath = await installPlugin(version);
