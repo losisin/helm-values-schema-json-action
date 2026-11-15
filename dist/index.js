@@ -33374,7 +33374,7 @@ function _getGlobal(key, defaultValue) {
 
 const pluginName = 'schema';
 const pluginRepository = 'helm-values-schema-json';
-const version$1 = 'v2.6.0';
+const version$1 = 'v2.6.1';
 function getPlugin(pluginVersion) {
     const osArch = os.arch();
     const osType = os.type();
@@ -46639,7 +46639,7 @@ function parse(src, reviver, options) {
     return doc.toJS(Object.assign({ reviver: _reviver }, options));
 }
 
-const version = 'v2.6.0';
+const version = 'v2.6.1';
 function getTargetValues(configFile) {
     return (getInput('values') ||
         (configFile.values || []).join(',') ||
